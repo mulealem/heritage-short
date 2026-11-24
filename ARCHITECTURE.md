@@ -35,6 +35,34 @@ storyboard.json ─┬─ narration ─── outputs/narration/<id>.wav        
   ducking, two-pass loudnorm to −14 LUFS / −1 dBTP, burned-in English subtitles,
   faststart MP4.
 
+## Swapping models
+
+The stages are deliberately model-agnostic. Each GPU stage's contract with
+the rest of the pipeline is a *file*, not an API:
+
+- **Video**: `outputs/shots/<shot_id>.mp4` + the mode decision in
+  `outputs/shots/plan.json`. Whatever makes those files — Wan 2.2 (the
+  included Kaggle worker), HunyuanVideo, or a hosted API like Veo/Runway/
+  Kling — the assemble stage consumes them identically: any resolution is
+  scale-cropped to 9:16 / 16:9, re-timed to 24 fps, and a short clip is
+  padded by holding its last frame (`tpad`), so a 5 s hosted-model clip
+  still fills a 7 s shot without breaking the timeline.
+  Ingest external clips with `python3 tools/import_clips.py <folder> --model veo-3`
+  (validates, names, and logs them to runs.jsonl), then `make shots && make assemble`.
+- **Keyframes**: `cf_flux()` in `pipeline/keyframes.py` is the only
+  provider-specific function (one API call + one decode). Swapping to another
+  image model means replacing that function; the prompt, seed, cache and
+  logging scaffolding around it stays.
+- **Narration / music**: model names are env-configurable (`GEMINI_TTS_MODEL`);
+  the Kaggle workers are the only ACE-Step-specific code.
+
+What a swap does NOT give you for free, and where to record it: seeds may not
+be honoured by hosted APIs (note reproducibility limits in EXPERIMENTS.md),
+cost must be logged per call at list price (the adapters call
+`common.log_call`), and per-model quirks belong in FAILURES.md. The
+comparison itself (same shot, two models, blind preference) is a strong
+"curiosity beyond the floor" experiment.
+
 ## Caching
 
 Content-hash caching in `narration.py` and `keyframes.py`: the cache key is

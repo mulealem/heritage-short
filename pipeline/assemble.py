@@ -91,7 +91,10 @@ def kenburns_chain(idx, dur, w, h):
 
 
 def clip_chain(dur, w, h):
-    return "%s,fps=%d,fade=t=in:st=0:d=0.12" % (scale_crop(w, h), FPS)
+    # tpad holds the last frame if the clip is shorter than the shot needs,
+    # so clips from ANY generator (5s Veo, 4s Wan, 10s Hunyuan) all work.
+    return "%s,fps=%d,tpad=stop_mode=clone:stop_duration=10,fade=t=in:st=0:d=0.12" % (
+        scale_crop(w, h), FPS)
 
 
 def render_segment(idx, item, w, h, work):

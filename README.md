@@ -52,6 +52,13 @@ narration/keyframe is regenerated (content-hash caching) and only that segment
 is re-rendered into the cut. Every model call appends a line to `runs.jsonl`
 (model, parameters, seed, latency, estimated cost, status).
 
+**Swappable by design**: the video stage's contract is just one mp4 per shot
+id in `outputs/shots/`. Clips from any generator (Wan 2.2, HunyuanVideo, a
+hosted API like Veo/Runway) drop in via
+`python3 tools/import_clips.py <folder> --model <name>` — resolution, frame
+rate and clip length are all normalised by the assemble stage. See
+ARCHITECTURE.md → "Swapping models".
+
 ## Repo map
 
 The docs that tell the story of building this:
