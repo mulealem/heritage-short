@@ -1,0 +1,145 @@
+{
+  "meta": {
+    "title": "Saturday Injera",
+    "status": "draft",
+    "narration_language": "en",
+    "aspect_ratios": ["9:16", "16:9"],
+    "audience": "PLACEHOLDER — replace with your real audience, e.g. 'my cousins in the diaspora, watching on their phones'",
+    "intent": "PLACEHOLDER — replace with your intent, e.g. 'they should feel that home is something you can still taste from far away'",
+    "narrator_style": "calm, warm, unhurried",
+    "style_block": "warm documentary photography, golden hour light, soft grain like 35mm film, earthy tones, gentle shadows",
+    "image_width": 720,
+    "image_height": 1280
+  },
+  "character_sheet": {
+    "prompt": "character reference sheet of Emaye, an Ethiopian grandmother in her sixties with a kind lined face, grey braided hair, wearing a white cotton netela with a woven green border; front view and three-quarter view, natural kitchen light",
+    "reference_notes": "Every keyframe must show the same face, the same netela, the same kitchen. Check the face and hands before spending GPU time on a clip."
+  },
+  "music": {
+    "caption": "gentle Ethiopian instrumental, solo krar plucks over a soft warm pad, pastoral and nostalgic, sparse texture with room for a voice, handmade feel",
+    "bpm": 72,
+    "key": "A major",
+    "instrumental": true,
+    "candidates": 3,
+    "seed": 42
+  },
+  "end_card": {
+    "text": "Made with AI",
+    "subtitle": "written by our family, pictures and music generated with open models",
+    "seconds": 2.5
+  },
+  "shots": [
+    {
+      "id": "s1_market",
+      "duration_s": 8,
+      "shot_size": "extreme_wide",
+      "image_prompt": "extreme wide shot of an old Ethiopian market street at golden hour, dusty light between low stone buildings, tiny figures carrying baskets",
+      "motion_prompt": "slow gentle push in, a few people walking through the far background, dust drifting in the light, camera steady",
+      "narration": {
+        "lang": "en",
+        "text": "Every Saturday of my childhood began the same way: before the sun, before the call to prayer, with the sound of my grandmother washing her hands."
+      },
+      "reason": "Establishes where and when the story happens, and puts the narrator's relationship to Emaye in one line.",
+      "seed": 101,
+      "music_cue": "score enters soft, single krar notes"
+    },
+    {
+      "id": "s2_kitchen",
+      "duration_s": 8,
+      "shot_size": "medium",
+      "image_prompt": "medium shot of Emaye in her kitchen at dawn, kneading teff dough in a clay bowl, steam rising from a round mitad griddle beside her",
+      "motion_prompt": "her hands keep kneading the dough, slow breathing motion, steam drifts upward, camera locked off",
+      "narration": {
+        "lang": "en",
+        "text": "She mixed the teff the night before and let it sour, and she said the waiting was the whole secret."
+      },
+      "reason": "First clear look at the main character doing the central ritual; the 'waiting' line plants the film's theme.",
+      "seed": 102,
+      "music_cue": "pad joins under the krar, very quiet"
+    },
+    {
+      "id": "s3_hands",
+      "duration_s": 6,
+      "shot_size": "insert",
+      "image_prompt": "close-up insert of weathered hands spreading pale teff batter in a slow spiral across a hot black mitad, tiny bubbles forming",
+      "motion_prompt": "the hand pours and spreads the batter in one slow spiral, bubbles rise and pop, steam, camera fixed",
+      "narration": {
+        "lang": "en",
+        "text": "The batter went on in one slow spiral, and the pan answered with a thousand small bubbles."
+      },
+      "reason": "Texture insert: the most tactile image of the film; gives the audience the sound and feel of the ritual.",
+      "seed": 103,
+      "music_cue": "sparse, let the pan rhythm lead"
+    },
+    {
+      "id": "s4_face",
+      "duration_s": 7,
+      "shot_size": "close_up",
+      "image_prompt": "close-up of Emaye's face lit by warm kitchen light, eyes following the griddle, faint smile, steam softening the background",
+      "motion_prompt": "she slowly turns her head toward the camera and smiles slightly, camera pushes in gently",
+      "narration": {
+        "lang": "en",
+        "text": "She never measured anything. She said the batter tells you when it is ready, if you are patient enough to listen."
+      },
+      "reason": "Emotional centre of the film: her face while she says the film's proverb-like line.",
+      "seed": 104,
+      "music_cue": "krar melody returns, tender"
+    },
+    {
+      "id": "s5_doorway",
+      "duration_s": 8,
+      "shot_size": "medium",
+      "image_prompt": "medium shot from inside a dim kitchen, a child of about eight silhouetted in the bright doorway watching Emaye work, morning light in dust",
+      "motion_prompt": "the child shifts weight and takes one small step inside, Emaye stays working, light flickers gently, camera static",
+      "narration": {
+        "lang": "en",
+        "text": "I was that child in the doorway. Too young to help, too curious to leave, learning without knowing I was learning."
+      },
+      "reason": "Introduces the narrator as a character and makes the memory personal rather than documentary.",
+      "seed": 105,
+      "music_cue": "pad rises slightly, warm"
+    },
+    {
+      "id": "s6_firstbite",
+      "duration_s": 7,
+      "shot_size": "close_up",
+      "image_prompt": "close-up of Emaye's hands tearing the first piece of warm injera from the mitad and offering it toward the camera, steam curling off the bread",
+      "motion_prompt": "the hands tear the piece and extend it slowly toward the camera, steam drifts, camera very slightly pushes in",
+      "narration": {
+        "lang": "en",
+        "text": "The first piece was never hers. It went to the child in the doorway, still too hot to hold."
+      },
+      "reason": "The giving gesture is the heart of the story: generosity before comfort.",
+      "seed": 106,
+      "music_cue": "silence for one beat, then soft krar"
+    },
+    {
+      "id": "s7_table",
+      "duration_s": 9,
+      "shot_size": "wide",
+      "image_prompt": "wide shot of a family gathered around a low mesob table sharing injera from the same platter, hands crossing the frame, warm lamplight at dusk",
+      "motion_prompt": "hands reach and take pieces of food, gentle laughter movement in shoulders, camera slowly pulls back",
+      "narration": {
+        "lang": "en",
+        "text": "By evening the whole street had found a reason to pass through her kitchen, because in her house there was always one more plate than there were guests."
+      },
+      "reason": "Widens the story from grandmother and child to community; the payoff of her habit.",
+      "seed": 107,
+      "music_cue": " fullest point of the score, still gentle"
+    },
+    {
+      "id": "s8_dusk",
+      "duration_s": 9,
+      "shot_size": "medium_close",
+      "image_prompt": "medium close shot of the empty kitchen at dusk, the mitad cooling on its stand, Emaye's stool beside it, blue evening light through the small window",
+      "motion_prompt": "dust settles in the last light, a curtain moves faintly, very slow push in, everything else still",
+      "narration": {
+        "lang": "en",
+        "text": "She is gone now, but every time I wait for anything, bread or news or grief, I hear her: the waiting is the whole secret. This film was made with AI so that her kitchen would not be forgotten."
+      },
+      "reason": "Closure: connects the proverb to the present, states the film's purpose, and justifies the AI end card.",
+      "seed": 108,
+      "music_cue": "score resolves to the opening krar phrase, fade"
+    }
+  ]
+}
