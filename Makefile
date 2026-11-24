@@ -1,6 +1,6 @@
 PY = python3
 
-.PHONY: film mock validate smoke narration keyframes shots music assemble clean
+.PHONY: film mock validate smoke narration keyframes shots music assemble serve clean
 
 # The one documented command: runs the whole pipeline end to end.
 film:
@@ -31,6 +31,12 @@ music:
 
 assemble:
 	$(PY) -m pipeline.assemble
+
+# Serve the architecture graph locally: http://127.0.0.1:8123/architecture.html
+# Expose it externally with a quick tunnel:
+#   cloudflared tunnel --url http://127.0.0.1:8123 --no-autoupdate
+serve:
+	$(PY) -m http.server 8123 --bind 127.0.0.1 --directory docs
 
 clean:
 	rm -rf outputs

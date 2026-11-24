@@ -73,6 +73,9 @@ The docs that tell the story of building this:
 `outputs/` media is gitignored (it regenerates from the storyboard — that is
 the point of the pipeline); `runs.jsonl` and all manifests are committed.
 
+A visual map of the pipeline lives at `docs/architecture.html` — open it
+directly, or `make serve` and browse http://127.0.0.1:8123/architecture.html.
+
 ## Requirements
 
 Python 3.8+ (stdlib only — nothing to `pip install`), FFmpeg with libx264 and
