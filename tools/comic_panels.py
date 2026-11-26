@@ -1,9 +1,12 @@
-"""Generate the comic insert panels (one extra detail panel per shot).
+"""Generate the comic panels cut into each beat (one or two per shot).
 
-Reads comic/panels.json and outputs/comic_panels/<shot_id>.jpg via the
-configured image provider (MiniMax image-01, or Cloudflare FLUX). The style
-block from the storyboard is prepended, so inserts match the keyframes.
-Cache sidecars make reruns free.
+Reads the `extras` of comic/panels.json and draws
+outputs/comic_panels/<shot_id>_xN.jpg with the configured image provider
+(MiniMax image-01, or Cloudflare FLUX as the free draft path). The style
+block from the storyboard is prepended, so the panels match the keyframes,
+and a panel that names an actor is drawn with that character's portrait and
+identity directive. Wide ensemble panels are left unanchored on purpose
+(FAILURES.md F13). Cache sidecars make reruns free.
 
 Usage: python3 tools/comic_panels.py [shot_id ...]
 """

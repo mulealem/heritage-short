@@ -52,6 +52,9 @@ FLUX draft path instead.
   systems build it once; the five commands are in [`comic/README.md`](comic/README.md).
 - About 35 MB of tracked model outputs ship with the clone (see below).
 
+Licence: **MIT for the code**; the generated film and images are not
+relicensed by it — see [`LICENSE`](LICENSE) and [`ETHICS.md`](ETHICS.md).
+
 | Stage | Model | Where | Key |
 |---|---|---|---|
 | narration | Gemini 3.8 Flash TTS (130+ languages incl. Amharic) | hosted | `GEMINI_API_KEY` (free tier) |
@@ -82,6 +85,35 @@ Every stage starts with `common.load_storyboard()`, which validates the
 contract, so a storyboard that breaks the schema stops everything before any
 model is called.
 
+## Make targets
+
+| Command | What it does |
+|---|---|
+| `make short` | **the one command** — both films from `storyboard.json` |
+| `make check` | the contract validates; all 40 assets (2 cast portraits, 11 keyframes, 16 panels, 10 lines, the score) were made from the contract as it stands; both films meet the brief |
+| `make verify` | checks both finished films against the brief: streams, resolution, 60–90 s, subtitle track |
+| `make validate` | validates `storyboard.json` against the schema, alone |
+| `make editor` | the local web editor (edit any field, regenerate one asset, render) |
+| `make prompts` | regenerates `PROMPTS.md` — every prompt and its sync status |
+| `make preflight` | one real call per provider; run after changing keys |
+| `make music` | the music-model route: needs a chosen score, refuses to guess |
+| `make film` | the video-clip route (Wan 2.2 on Kaggle); not the submitted film |
+| `make help` | the same list in the terminal |
+
+## Tools
+
+| Tool | Purpose |
+|---|---|
+| `tools/verify_film.py` | `make verify` — both films against the brief |
+| `tools/audit_sync.py` | recomputes every cache key from the contract and reports each asset in sync, stale or missing (`make check`) |
+| `tools/cost_report.py` | per-stage latency and cost, read from `runs.jsonl` |
+| `tools/export_prompts.py` | `make prompts` — the prompt ledger |
+| `tools/editor_server.py` | `make editor` — the local web editor |
+| `tools/make_qenet_bed.py` | the score synthesiser (deterministic) |
+| `tools/build_bundles.py`, `tools/import_clips.py` | the Kaggle round-trip of the video-clip route |
+| `tools/smoke_test.py` | `make preflight` — one real call per provider |
+| `tools/clean_narration_tails.py`, `tools/trim_tts_prefix.py` | one-off repairs for the two TTS artefacts (F14, F11); the narration stage now handles both itself |
+
 ## Change one thing, regenerate one thing
 
 Every model call is cached by a hash of exactly what was sent (prompt,
@@ -89,16 +121,19 @@ reference, model, size, seed). Edit one image prompt in `storyboard.json`:
 
 ```bash
 make short
-#   s1_das: cache hit … s5_dressed: cache hit
-#   keyframes  image-01  /…/outputs/keyframes/s5_dressed.png   <- the one call
+#   character_sheet: cache hit
+#   s1_das: cache hit   …   s10_punchline: cache hit      <- ten cache hits
+#   [+] keyframes  image-01  outputs/keyframes/s5_dressed.png   <- the one call
 ```
 
-Nine keyframes and sixteen panels are cache hits; one image is drawn; the
-films are re-rendered from the same timeline. Narration works the same way,
-per line. Measured in a clone (`FAILURES.md` F19): with one prompt changed and
-no key, the stage stops and asks for the key; with the key it makes exactly one
-call (image-01, 18.5 s, $0.0035) and reports ten cache hits. The same is true from the web editor, with a **Regenerate** button
-per keyframe, per panel and per line.
+The other ten keyframe jobs (the cast sheet and nine shots) and all sixteen
+panels are cache hits; one image is drawn; the films are re-rendered from the
+same timeline. Narration works the same way, per line.
+
+Measured in a clone (`FAILURES.md` F19): with one prompt changed and no key,
+the stage stops and asks for the key; with the key it makes exactly one call
+(image-01, 18.5 s, $0.0035) and reports ten cache hits. The web editor offers
+the same thing as a **Regenerate** button per keyframe, per panel and per line.
 
 ## The two pictures from one timeline
 
@@ -162,6 +197,12 @@ size.
 - [`COSTS.md`](COSTS.md) — measured latency and list-price equivalents
 - [`ETHICS.md`](ETHICS.md) — consent, licences, labelling
 - [`REPORT.md`](REPORT.md) — the written report for the brief
+- [`story_brief.md`](story_brief.md) — the one page that comes before a
+  storyboard: story, one picture per beat, audience, the feeling at the end
+- [`comic/README.md`](comic/README.md) — the renderer: build requirements, the
+  two layouts, the `film.json` data contract
+- [`kaggle/README.md`](kaggle/README.md) — the optional GPU stages (Wan 2.2,
+  ACE-Step), step by step, with their honest status
 - `docs/architecture.html` — a visual map (`make serve`, then
   http://127.0.0.1:8123/architecture.html)
 

@@ -1,11 +1,14 @@
-"""One-command run: validate -> narration -> keyframes -> shots -> music -> assemble.
+"""The video-clip route (`make film`): validate -> narration -> keyframes ->
+shots -> music -> assemble.
 
-Real only. A preflight checks API keys before anything runs; each stage then
-hard-fails with instructions if its inputs are missing. Note the bootstrap
-order on a fresh project: narration + keyframes (hosted APIs) come first —
-their outputs are what you upload to Kaggle to produce the clips and the
-score that the shots/music stages require. Rerun `make film` after each
-Kaggle round-trip; finished work is cache-hit and costs nothing.
+This is NOT the command that made the submitted film — that is `make short`
+(pipeline/short.py), the motion-comic route. This one uses real moving shots
+from Wan 2.2 on Kaggle, so it needs the Kaggle round-trip: narration and
+keyframes (hosted APIs) come first, their outputs are uploaded to Kaggle, and
+the shots/music stages stop with instructions until the clips and a chosen
+score are in outputs/. Rerun after each round-trip; finished work is
+cache-hit and costs nothing. Real only, and untested end to end (no Wan clip
+was ever produced — FAILURES.md F6).
 """
 import sys
 

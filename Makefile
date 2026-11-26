@@ -1,6 +1,31 @@
 PY = python3
 
-.PHONY: short film comic cast panels score editor prompts verify preflight validate narration keyframes shots music assemble serve clean
+.PHONY: help check short film comic cast panels score editor prompts verify preflight validate narration keyframes shots music assemble serve clean
+
+# Self-consistency: the contract validates, every committed asset was made
+# from the contract as it stands (tools/audit_sync.py), and both finished
+# films meet the brief (tools/verify_film.py). Non-zero if anything is off.
+check:
+	$(PY) -m pipeline.validate_sb storyboard.json
+	$(PY) tools/audit_sync.py
+	$(PY) tools/verify_film.py outputs/film_9x16.mp4 outputs/film_16x9.mp4
+
+# Every target, with one line each.
+help:
+	@echo "make check      schema + every asset in sync with the contract + both films vs the brief"
+	@echo "make short      THE ONE COMMAND: storyboard.json -> film_9x16.mp4 + film_16x9.mp4"
+	@echo "make verify     check both films against the brief (streams, resolution, 60-90 s, subtitles)"
+	@echo "make validate   validate storyboard.json against the schema"
+	@echo "make editor     local web editor: edit any field, regenerate one asset, render"
+	@echo "make prompts    regenerate PROMPTS.md (every prompt + sync status)"
+	@echo "make preflight  one real call per provider (run after changing keys)"
+	@echo "make cast | panels | keyframes | narration   one stage on its own"
+	@echo "make score      keep a chosen score, or build the qenet bed"
+	@echo "make music      music-model route: needs a chosen score (ACE-Step, see kaggle/README.md)"
+	@echo "make comic      build + render the 9:16 film only"
+	@echo "make film       video-clip route (Wan 2.2 on Kaggle) - not the submitted film"
+	@echo "make serve      docs/ on http://127.0.0.1:8123 (architecture.html)"
+	@echo "make clean      remove render intermediates (cached model outputs stay)"
 
 # THE ONE COMMAND: storyboard.json -> outputs/film_9x16.mp4 + outputs/film_16x9.mp4
 #   validate, narration, cast, keyframes, panels, comic build, score, render 9:16, render 16:9

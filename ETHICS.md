@@ -37,6 +37,16 @@ this machine (Nov 2026). The two paid/API model terms are the owner's to
 confirm on the day of publishing; nothing else in the film comes from a
 third party.
 
+## Repository licence
+
+- The **code** — the pipeline, tools, editor, schemas, the renderer's Rust
+  source and the documentation — is **MIT** (`LICENSE`).
+- The **generated film and artwork** are not relicensed by that MIT licence:
+  their terms come from the models above. `LICENSE` says so in its last
+  section, so a reader is not misled into thinking the images were made MIT.
+- The **retelling** in `storyboard.json`, `STORY.md` and the film is the
+  author's; the underlying tale is traditional.
+
 ## Labelling plan
 
 - The film ends with a visible "made with AI" end card (in the storyboard):

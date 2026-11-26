@@ -45,8 +45,14 @@
   .stage{border-top:3px solid var(--line)}
   .stage.narr{border-top-color:var(--narr)} .stage.keys{border-top-color:var(--keys)}
   .stage.shots{border-top-color:var(--shots)} .stage.music{border-top-color:var(--music)}
+  .stage.cast{border-top-color:var(--keys)} .stage.panels{border-top-color:var(--keys)}
+  .stage.comic{border-top-color:var(--asm)} .stage.score{border-top-color:var(--music)}
+  .stage.valid{border-top-color:var(--ops)}
   .stage h3 small{color:var(--dim);font-weight:400;font-size:12px;display:block;margin-top:2px}
-  .flow{display:flex;gap:10px;align-items:stretch}
+  .flow{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+  .flow .card{flex:1 1 200px}
+  .num{display:inline-block;min-width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;
+       background:var(--panel2);border:1px solid var(--line);color:var(--dim);font-size:12px;margin-right:6px}
   .flow .card{flex:1}
   .plus{align-self:center;color:var(--ops);font-size:22px;padding:0 2px}
   .steps{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -70,10 +76,10 @@
 <div class="wrap">
 <header>
   <h1>Heritage Short — Pipeline Architecture</h1>
-  <p><code>a-video-generator</code> · one contract, six stages, swappable models · zero-install (Python stdlib + FFmpeg)</p>
+  <p><code>a-video-generator</code> · one contract, one command (<code>make short</code>), two renderers · Python stdlib + FFmpeg + a Rust comic renderer on CPU</p>
   <div class="legend">
-    <span class="tag t-real">hosted API</span><span class="tag t-gpu">GPU on Kaggle (free)</span>
-    <span class="tag t-local">local · FFmpeg</span><span class="tag t-file">file contract</span>
+    <span class="tag t-real">hosted API</span><span class="tag t-gpu">GPU on Kaggle (optional lane, not used in this film)</span>
+    <span class="tag t-local">local · CPU</span><span class="tag t-file">file contract</span>
   </div>
 </header>
 
@@ -82,146 +88,179 @@
   <div class="rail">
     <div class="card">
       <h3>.env <span class="tag t-local">secrets</span></h3>
-      <p>GEMINI_API_KEY, CF_ACCOUNT_ID, CF_API_TOKEN. Gitignored; loaded by <code>pipeline/common.py</code>. Missing key ⇒ the stage stops with setup instructions — the pipeline is real-only.</p>
+      <p><code>GEMINI_API_KEY</code> (narration), <code>MINIMAX_API_KEY</code> (images) — or <code>IMAGE_PROVIDER=cloudflare</code> with the two Cloudflare values for the free draft path. Gitignored. <b>Asked for only when an asset is not cached</b>: a clone that keeps <code>outputs/</code> needs no keys at all.</p>
     </div>
     <div class="opsline"></div>
     <div class="card">
       <h3>runs.jsonl <span class="tag t-local">evidence</span></h3>
-      <p>Every stage appends one line per model call (and notable op): <b>model · params · seed · latency_ms · status · est cost</b>. Graded logs live here, never in memory.</p>
+      <p>One line per call: <b>stage · model · params · seed · latency_ms · status · est cost · output</b>. <code>COSTS.md</code> is read from it, not remembered. The first 58 lines are the mock scaffold the project started from; everything after is real.</p>
     </div>
     <div class="opsline"></div>
     <div class="card">
-      <h3>retries</h3>
-      <p><code>pipeline/net.py</code>: 3 attempts, exponential backoff on 429/5xx/timeouts. After that the error is logged and the stage exits with instructions — finished work stays cached, so a rerun never pays twice.</p>
+      <h3>retries · fail loud</h3>
+      <p><code>pipeline/net.py</code>: 3 attempts, exponential backoff on 429/5xx/timeouts. Then the error is logged and the stage exits with instructions. No placeholder is ever written; finished work stays cached.</p>
+    </div>
+    <div class="opsline"></div>
+    <div class="card">
+      <h3>one command</h3>
+      <p><code>make short</code> — clone to both films. Measured on a clean clone with no keys: <b>0 model calls, 39 cache hits, 8 min 19 s</b>, Rust build included.</p>
     </div>
   </div>
 
   <!-- CENTER: the flow -->
   <div>
-    <div class="card" style="text-align:center">
-      <h3>story_brief.md <span class="tag t-file">your notes</span></h3>
-      <p>story · audience · intent · language (hand-written by you)</p>
-    </div>
-    <div class="arrow-down">▼</div>
     <div class="card">
-      <h3>① script — <code>pipeline/script.py</code> <span class="tag t-real">Gemini Flash</span></h3>
-      <p>optional drafting assist (needs GEMINI_API_KEY); output must pass schema validation and your review</p>
+      <h3>story_brief.md <span class="tag t-file">the brief</span></h3>
+      <p>story in five sentences · one picture per beat · audience · the feeling at the end. <code>pipeline/script.py</code> can draft a storyboard from it; this film's storyboard was written by hand against it.</p>
     </div>
     <div class="arrow-down">▼</div>
     <div class="card contract">
       <h3>storyboard.json — THE CONTRACT</h3>
-      <p>meta · character_sheet · music · end_card · 8–12 shots
-         (duration, shot_size, image_prompt, motion_prompt, narration, <b>reason</b>, seed)</p>
-      <p style="color:var(--fg)">validated by <code>schema/storyboard.schema.json</code> before every run — <code>make validate</code></p>
+      <p>meta (style block, audience, intent, <b>timing</b>) · character_sheet · music · end_card · 8–12 shots
+         (duration, image_prompt, motion_prompt, narration + English line, <b>reason</b>, seed)</p>
+      <p>with <code>comic/panels.json</code>: the direction per beat — which panels, where they cut, balloons, SFX, which cast portrait anchors a cut</p>
+      <p style="color:var(--fg)">validated against <code>schema/storyboard.schema.json</code> by <b>every stage</b> before it runs (<code>common.load_storyboard()</code>)</p>
     </div>
-    <div class="arrow-down">▼&nbsp;&nbsp;fans out — every stage reads only the contract + its own outputs</div>
+    <div class="arrow-down">▼&nbsp;&nbsp;make short — each stage reads only the contract and earlier stages' outputs</div>
 
-    <div class="fanout">
+    <div class="flow">
+      <div class="card stage valid">
+        <h3><span class="num">1</span>validate <small>pipeline/validate_sb.py</small></h3>
+        <p>the schema check; a broken contract stops everything before any model is called</p>
+      </div>
       <div class="card stage narr">
-        <h3>② narration <small>pipeline/narration.py</small></h3>
-        <p><span class="tag t-real">Gemini TTS · 130+ langs</span></p>
+        <h3><span class="num">2</span>narration <small>pipeline/narration.py</small></h3>
+        <p><span class="tag t-real">Gemini 3.8 Flash TTS</span></p>
         <ul>
-          <li>one WAV per shot, style steered ("calm, warm")</li>
-          <li>real only — a failed call stops the stage</li>
-          <li>cache: sha256(text·lang·voice)</li>
+          <li>one WAV per line, voice Kore — the spoken text only is sent</li>
+          <li>the model's terminal noise burst is trimmed (F14)</li>
+          <li>edited to the cut per <code>meta.timing</code>: pauses held, a 5 % tempo → <code>outputs/narration_fit/</code></li>
         </ul>
-        <p>→ <code>outputs/narration/&lt;id&gt;.wav</code> <span class="tag t-file"></span></p>
+        <p>→ <code>outputs/narration/&lt;id&gt;.wav</code></p>
+      </div>
+      <div class="card stage cast">
+        <h3><span class="num">3</span>cast <small>tools/comic_cast.py</small></h3>
+        <p><span class="tag t-real">MiniMax image-01</span></p>
+        <ul>
+          <li>one portrait per character: the identity anchor</li>
+        </ul>
+        <p>→ <code>outputs/character_refs/&lt;actor&gt;.jpg</code></p>
       </div>
       <div class="card stage keys">
-        <h3>③ keyframes <small>pipeline/keyframes.py</small></h3>
-        <p><span class="tag t-real">FLUX.1 schnell · Cloudflare</span></p>
+        <h3><span class="num">4</span>keyframes <small>pipeline/keyframes.py</small></h3>
+        <p><span class="tag t-real">image-01</span> <span class="tag t-real">FLUX-2 klein (free draft)</span></p>
         <ul>
-          <li>character/style sheet FIRST, then shots conditioned on it</li>
-          <li>real only — a failed call stops the stage</li>
-          <li>cache: sha256(prompt·size·seed)</li>
+          <li>one still per shot; a character's identity directive is appended only when that portrait is attached</li>
+          <li>cache key = sha256 of exactly what is sent</li>
         </ul>
-        <p>→ <code>outputs/keyframes/&lt;id&gt;.png</code> <span class="tag t-file"></span></p>
+        <p>→ <code>outputs/keyframes/&lt;id&gt;.png</code></p>
       </div>
-      <div class="card stage shots">
-        <h3>④ moving shots <small>pipeline/shots.py</small></h3>
-        <p><span class="tag t-gpu">Wan 2.2 TI2V-5B · Kaggle T4</span></p>
+      <div class="card stage panels">
+        <h3><span class="num">5</span>panels <small>tools/comic_panels.py</small></h3>
+        <p><span class="tag t-real">image-01</span></p>
         <ul>
-          <li>emits manifest → Kaggle worker (save-as-you-go, resume-safe)</li>
-          <li>requires a real clip for EVERY shot — missing ⇒ stops with steps</li>
-          <li>clip list recorded in <code>plan.json</code></li>
+          <li>the interaction and reaction cuts inside each beat (16 panels)</li>
+          <li>wide ensemble cuts stay unanchored (F13)</li>
         </ul>
-        <p>→ <code>outputs/shots/&lt;id&gt;.mp4</code> <span class="tag t-file"></span></p>
+        <p>→ <code>outputs/comic_panels/&lt;id&gt;_xN.jpg</code></p>
       </div>
-      <div class="card stage music">
-        <h3>⑤ music <small>pipeline/music.py</small></h3>
-        <p><span class="tag t-gpu">ACE-Step 1.5 · Kaggle</span></p>
+      <div class="card stage comic">
+        <h3><span class="num">6</span>comic build <small>pipeline/comic.py build</small></h3>
+        <p><span class="tag t-local">stdlib</span></p>
         <ul>
-          <li>caption + bpm + key → 3 candidates, you audition &amp; pick</li>
-          <li>real only — no score ⇒ stops with the worker steps</li>
-          <li>your pick is the subjective call: <code>score_final.wav</code></li>
+          <li>timeline from the fitted narration: beats, held beats, end card</li>
+          <li>cuts, balloons, SFX, word timings per shot</li>
         </ul>
-        <p>→ <code>outputs/music/score_final.wav</code> <span class="tag t-file"></span></p>
+        <p>→ <code>comic/film.json</code> + panel copies in <code>comic/media/</code></p>
+      </div>
+      <div class="card stage score">
+        <h3><span class="num">7</span>score <small>pipeline/score.py</small></h3>
+        <p><span class="tag t-local">own code</span> <span class="tag t-gpu">ACE-Step 1.5 (optional)</span></p>
+        <ul>
+          <li>a chosen score is kept; an empty slot gets the qenet bed, synthesised from the shot list</li>
+          <li><code>make music</code> is the music-model route and refuses to guess</li>
+        </ul>
+        <p>→ <code>outputs/music/score_final.wav</code></p>
+      </div>
+      <div class="card stage comic">
+        <h3><span class="num">8</span>render 9:16 <small>comic/ — fframes, Rust, CPU</small></h3>
+        <ul>
+          <li>full-bleed panels, camera moves, balloons, SFX, kinetic captions, halftone</li>
+          <li>~4 CPU minutes · same inputs, same frames</li>
+        </ul>
+        <p>→ <code>outputs/comic/picture.mp4</code></p>
+      </div>
+      <div class="card stage comic">
+        <h3><span class="num">9</span>render 16:9 <small>same scene, cargo feature “wide”</small></h3>
+        <ul>
+          <li>landscape comic page: the panel strip centred, Amharic line left, English right</li>
+          <li>same <code>film.json</code>, same frames' inputs</li>
+        </ul>
+        <p>→ <code>outputs/comic/picture_16x9.mp4</code></p>
       </div>
     </div>
 
-    <div class="arrow-down">▼&nbsp;&nbsp;converges</div>
+    <div class="arrow-down">▼&nbsp;&nbsp;one audio master, two muxes</div>
     <div class="card" style="border-color:var(--asm)">
-      <h3>⑥ assemble — <code>pipeline/assemble.py</code> <span class="tag t-local">FFmpeg only · deterministic</span></h3>
+      <h3>mix + mux <small>pipeline/comic.py · FFmpeg</small> <span class="tag t-local">CPU · deterministic audio</span></h3>
       <div class="steps">
-        <span class="step"><b>timeline</b> from measured narration</span>→
-        <span class="step"><b>segments</b> real clips, per ratio</span>→
-        <span class="step"><b>tpad</b> last-frame hold (any clip length)</span>→
-        <span class="step"><b>end card</b> "Made with AI"</span>→
-        <span class="step"><b>concat</b></span>→
+        <span class="step"><b>narration</b> placed on the timeline</span>→
+        <span class="step"><b>score</b> −24 LUFS</span>→
         <span class="step"><b>ducking</b> sidechaincompress</span>→
         <span class="step"><b>loudnorm</b> −14 LUFS / −1 dBTP (2-pass)</span>→
-        <span class="step"><b>subtitles</b> EN burned-in</span>→
+        <span class="step"><b>subtitles</b> soft English track</span>→
+        <span class="step"><b>disclosure</b> title + AI comment metadata</span>→
         <span class="step"><b>mux</b> +faststart</span>
       </div>
       <div class="films">
-        <div class="card film">vertical<span class="big mono">outputs/film_9x16.mp4</span><p>1080×1920 · 24 fps</p></div>
-        <div class="card film">horizontal<span class="big mono">outputs/film_16x9.mp4</span><p>1920×1080 · 24 fps</p></div>
+        <div class="card film">vertical · 89.7 s<span class="big mono">outputs/film_9x16.mp4</span><p>1080×1920 · 24 fps</p></div>
+        <div class="card film">landscape · 89.7 s<span class="big mono">outputs/film_16x9.mp4</span><p>1920×1080 · 24 fps</p></div>
       </div>
     </div>
 
-    <div class="arrow-down">▼&nbsp;&nbsp;or, without any video model: the comic lane</div>
-    <div class="card" style="border-color:var(--keys)">
-      <h3>⑦ comic — <code>pipeline/comic.py</code> + <code>comic/</code> <span class="tag t-local">fframes · Rust · CPU</span></h3>
+    <div class="arrow-down">▼&nbsp;&nbsp;the other renderer — real moving shots, not used for this film (<code>make film</code>)</div>
+    <div class="card" style="border-color:var(--shots)">
+      <h3>video-clip route <small>pipeline/shots.py → pipeline/assemble.py</small> <span class="tag t-gpu">Wan 2.2 TI2V-5B · Kaggle T4</span></h3>
       <div class="steps">
-        <span class="step"><b>panels</b> + inserts (image-01)</span>→
-        <span class="step"><b>film.json</b> from measured narration</span>→
-        <span class="step"><b>camera</b> push/pan/shake</span>→
-        <span class="step"><b>balloons</b> spring pop</span>→
-        <span class="step"><b>SFX</b> starbursts</span>→
-        <span class="step"><b>captions</b> word-by-word</span>→
-        <span class="step"><b>mux</b> + soft subtitles</span>
+        <span class="step"><b>shots</b> manifest → Kaggle worker (resume-safe)</span>→
+        <span class="step"><b>plan.json</b> a real clip for every shot</span>→
+        <span class="step"><b>segments</b> per ratio, last-frame hold</span>→
+        <span class="step"><b>concat · ducking · loudnorm · subtitles</b></span>
       </div>
-      <p style="color:var(--dim)">Deterministic, no GPU, no video API: ~5 CPU minutes for the whole film. Same storyboard, narration and score as the clip route.</p>
+      <p style="color:var(--dim)">Real-only and untested end to end: no Wan clip was ever produced (F6). Clips from any generator drop in through <code>tools/import_clips.py</code>.</p>
     </div>
   </div>
 
-  <!-- RIGHT RAIL: infra -->
+  <!-- RIGHT RAIL: how it holds up -->
   <div class="rail">
     <div class="card">
       <h3>caching</h3>
-      <p>content-hash sidecars per artifact: change one shot in the storyboard → only that shot regenerates. Verified: full re-run = 100% cache hits. This is the walkthrough demo.</p>
+      <p>Content-hash sidecars: the key is the sha256 of <b>exactly what would be sent</b> — provider, model token, composed prompt, reference, size, seed. Change one prompt → <b>one</b> model call and ten cache hits (measured). <code>PROMPTS.md</code> reports every asset as in sync or stale.</p>
     </div>
     <div class="card">
-      <h3>swappable models <span class="tag t-file">mp4 in = clip in</span></h3>
-      <p>The video stage's contract is a <i>file</i>, not an API. Veo / Runway / Hunyuan clips drop in via
-      <code>tools/import_clips.py &lt;folder&gt; --model NAME</code> → assemble normalises ratio, fps, length.</p>
+      <h3>proven by cloning</h3>
+      <p>A clean clone with no <code>.env</code> rebuilt both films: identical <code>film.json</code>, byte-identical audio, identical subtitles, 2,079 / 2,151 vertical frames bit-identical. That test found two bugs a cache-only run could not (F18, F19).</p>
     </div>
     <div class="card">
-      <h3>Kaggle lane <span class="tag t-gpu">~30 GPU-h/week</span></h3>
-      <p>phone-verified account · T4 · workers in <code>kaggle/</code> write <code>kaggle_runs.jsonl</code> as they go; outputs zip back into <code>outputs/</code>.</p>
+      <h3>guards</h3>
+      <p>The renderer refuses to run while a narration line was recorded from different text. <code>make verify</code> checks both films against the brief: streams, resolution, 60–90 s, subtitles.</p>
+    </div>
+    <div class="card">
+      <h3>swappable models <span class="tag t-file">a file is the contract</span></h3>
+      <p><code>IMAGE_PROVIDER</code> switches image models; the video stage's contract is one mp4 per shot id, so Wan / Hunyuan / hosted clips are consumed identically.</p>
     </div>
     <div class="card">
       <h3>docs = the story</h3>
-      <p>ARCHITECTURE · DESIGN (2 user tests) · EXPERIMENTS (≥10) · FAILURES · COSTS · ETHICS (consent gate)</p>
+      <p>README · ARCHITECTURE · DESIGN (audience, intent, the two user tests) · EXPERIMENTS (E1–E12) · FAILURES (F1–F19) · COSTS · ETHICS (consent gate) · STORY · PROMPTS · REPORT</p>
     </div>
   </div>
 </div>
 
-<div class="note"><b>One command:</b> <code>make film</code> runs validate → narration → keyframes → shots → music → assemble (real only — Kaggle stages stop with instructions until their workers have run; rerun after each round-trip, cache hits are free).
-&nbsp;<code>make comic</code> renders the motion-comic lane instead of video clips.
-&nbsp;<code>make preflight</code> makes one real call per provider. Swap a shot by editing <code>storyboard.json</code> and re-running — watch <code>runs.jsonl</code>.</div>
+<div class="note"><b>One command:</b> <code>make short</code> runs validate → narration → cast → keyframes → panels → comic build → score → render 9:16 → render 16:9, and prints what the run cost: N real model calls, M cache hits.
+<b>Change one thing:</b> edit a prompt or a line in <code>storyboard.json</code>, rerun, and watch <code>runs.jsonl</code> — one new call.
+<b>Check:</b> <code>make verify</code>. <b>Keys:</b> <code>make preflight</code> makes one real call per provider.</div>
 
-<footer>Generated from the repository's real stage code · see ARCHITECTURE.md for prose · this page: docs/architecture.html</footer>
+<footer>Written against the repository's stage code, 26 Nov 2026 · see ARCHITECTURE.md for the prose · this page: docs/architecture.html</footer>
 </div>
 </body>
 </html>

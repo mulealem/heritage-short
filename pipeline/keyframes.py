@@ -1,13 +1,24 @@
 """Stage: keyframes — character/style sheet first, then one still per shot.
 
-Real only: Cloudflare Workers AI FLUX (needs CF_ACCOUNT_ID + CF_API_TOKEN).
-The FLUX-2 klein family accepts multipart form-data only and honours
-width/height/seed (verified against the live API, Nov 2026); the older
-flux-1-schnell route took a JSON body but dropped width/height/seed.
+Real only. IMAGE_PROVIDER picks the image model (default `minimax`):
+  - minimax    MiniMax image-01 (MINIMAX_API_KEY). One `subject_reference`
+               portrait per image: when comic/panels.json names an actor for
+               a shot, that character's portrait is attached and their
+               identity directive is appended to the prompt.
+  - cloudflare FLUX-2 klein on Workers AI (CF_ACCOUNT_ID + CF_API_TOKEN), the
+               free draft path: text-only, so faces drift. The klein family
+               accepts multipart form-data only and honours width/height/seed
+               (verified against the live API, Nov 2026); the older
+               flux-1-schnell route took a JSON body but dropped them.
 A failed call (after net.py's retries) stops the stage — no placeholder
-image is ever written.
+image is ever written. The API key is requested only when an image is not
+already cached, so a clone that carries outputs/ needs none.
 
-Note: klein returns JPEG bytes; consumers (ffmpeg, PIL) sniff content, the
+Caching: the key is the sha256 of exactly what is sent (provider, model
+token, composed prompt, reference, size, seed), stored in a sidecar next to
+the image.
+
+Note: image-01 and klein return JPEG bytes; consumers sniff content, the
 .png filenames are just the pipeline contract.
 
 Output: outputs/keyframes/character_sheet.png and outputs/keyframes/<id>.png

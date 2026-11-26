@@ -1,0 +1,44 @@
+MIT License (code only — see the last section)
+
+Copyright (c) 2026 the "Eat, My Clothes, Eat!" project contributors
+
+This licence covers the source code in this repository: the pipeline
+(`pipeline/`), the tools (`tools/`), the web editor (`editor/`), the schemas,
+the documentation and the comic renderer (`comic/` source). It does NOT
+automatically cover the generated film or its artwork — see "What this
+licence does not cover" below.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+--------------------------------------------------------------------------
+What this licence does not cover
+
+- The generated film (`outputs/film_9x16.mp4`, `outputs/film_16x9.mp4`), the
+  generated panels, keyframes and portraits in `outputs/`, and the narration
+  audio. Their terms come from the models that produced them: Gemini TTS
+  (Google) and MiniMax image-01 (MiniMax), whose generative-output terms are
+  the owner's to confirm — see `ETHICS.md`.
+- The story. "Eat, My Clothes, Eat!" is a traditional Ethiopian folk tale,
+  retold here; the retelling in `storyboard.json`, `STORY.md` and the film is
+  the author's.
+- The bundled fonts in `comic/media/` and `editor/fonts/`: DM Sans, Bangers
+  and Noto Sans Ethiopic, each under the SIL Open Font Licence 1.1, which
+  applies to those files instead.
+- The Rust dependency `fframes` (MIT) and FFmpeg/x264 (LGPL/GPL), which are
+  linked tools, not part of this repository's code.

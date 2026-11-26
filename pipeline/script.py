@@ -17,12 +17,12 @@ from pipeline import common, net
 from pipeline.jsonschema_lite import validate
 
 PROMPT = """You are drafting a machine-readable storyboard for a 60-90 second
-short film about a family story. Return ONLY valid JSON matching this shape:
+short film about a person, a place or a story. Return ONLY valid JSON matching this shape:
 {{"meta": {{"title", "status":"draft", "narration_language", "aspect_ratios":["9:16","16:9"],
 "audience", "intent", "narrator_style", "style_block", "image_width", "image_height"}},
 "character_sheet": {{"prompt"}}, "music": {{"caption", "bpm", "key", "instrumental": true, "candidates": 3}},
-"end_card": {{"text", "subtitle", "seconds": 2.5}},
-"shots": [8 to 12 objects: {{"id", "duration_s" (3-12), "shot_size" (extreme_wide|wide|medium|medium_close|close_up|extreme_close|insert),
+"end_card": {{"text", "text_am" (the same line in the narration language, or omitted), "subtitle", "seconds": 2.5 to 3}},
+"shots": [8 to 12 objects: {{"id", "duration_s" (3-20; a beat may be held after its line), "shot_size" (extreme_wide|wide|medium|medium_close|close_up|extreme_close|insert),
 "image_prompt", "motion_prompt" (ONLY motion and camera, never re-describe the subject), "narration": {{"lang", "text", "en"}},
 "reason" (why this shot exists), "seed", "music_cue"}}]}}
 Narration total must be 130-220 words at ~2.3 words/second. Vary shot sizes.
@@ -35,7 +35,7 @@ STORY BRIEF:
 
 def draft_with_gemini(brief_text):
     key = common.env_key("GEMINI_API_KEY")
-    model = common.env_key("GEMINI_TEXT_MODEL") or "gemini-2.5-flash"
+    model = common.env_key("GEMINI_TEXT_MODEL") or "gemini-3.8-flash"
     url = ("https://generativelanguage.googleapis.com/v1beta/models/"
            "%s:generateContent?key=%s" % (model, key))
     payload = {"contents": [{"parts": [{"text": PROMPT.format(brief=brief_text)}]}],

@@ -1,15 +1,18 @@
-"""Stage: music — the real ACE-Step score, chosen from Kaggle candidates.
+"""Stage: music — a real, chosen score in outputs/music/score_final.wav.
 
 This stage does not call a model from this machine. It:
-  1. writes kaggle/manifest_music.json for the Kaggle ACE-Step worker,
+  1. writes kaggle/manifest_music.json, sized to the assembled cut, for the
+     Kaggle ACE-Step worker,
   2. requires a chosen score: outputs/music/score_final.wav. Candidates
      without a choice stop the stage (audition them first); no candidates at
      all stop the stage with the exact worker steps. No placeholder pad is
      ever generated.
 
-Workflow: run this -> upload the manifest to Kaggle (kaggle/README.md) ->
-run the worker -> download candidate_<seed>.mp3 into outputs/music/ ->
-audition and copy the winner to score_final.wav -> rerun this stage.
+A chosen score is either an ACE-Step take (kaggle/README.md) or the
+deterministic qenet bed this repository synthesises itself
+(tools/make_qenet_bed.py); outputs/music/score_source.txt records which.
+`make short` runs pipeline/score.py, which keeps a chosen score and otherwise
+builds the bed.
 """
 import json
 import sys
@@ -81,7 +84,10 @@ def main():
         sys.exit(
             "music: %d candidates found in %s but none chosen yet.\n"
             "audition them against the narration, then:\n"
-            "  cp outputs/music/candidate_<seed>.mp3 outputs/music/score_final.wav\n"
+            "  ffmpeg -i outputs/music/candidate_<seed>.mp3 -c:a pcm_s16le "
+            "outputs/music/score_final.wav\n"
+            "  echo \"ace-step-1.5 seed <seed>\" > outputs/music/score_source.txt\n"
+            "  python3 -m pipeline.comic remux 9x16 && python3 -m pipeline.comic remux 16x9\n"
             "and note WHY you picked it in EXPERIMENTS.md"
             % (len(candidates), out_dir))
     else:
