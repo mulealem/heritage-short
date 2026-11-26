@@ -95,7 +95,9 @@ make short
 
 Nine keyframes and sixteen panels are cache hits; one image is drawn; the
 films are re-rendered from the same timeline. Narration works the same way,
-per line. The same is true from the web editor, with a **Regenerate** button
+per line. Measured in a clone (`FAILURES.md` F19): with one prompt changed and
+no key, the stage stops and asks for the key; with the key it makes exactly one
+call (image-01, 18.5 s, $0.0035) and reports ten cache hits. The same is true from the web editor, with a **Regenerate** button
 per keyframe, per panel and per line.
 
 ## The two pictures from one timeline
