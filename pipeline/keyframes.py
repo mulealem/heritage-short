@@ -103,6 +103,7 @@ def main():
         model = common.env_key("CF_FLUX_MODEL") or "@cf/black-forest-labs/flux-2-klein-4b"
         try:
             if provider == "minimax":
+                from pipeline.minimax_image import minimax_image
                 # the sheet is a landscape page; panels are vertical
                 ratio = "3:2" if label == "character_sheet" else \
                     ASPECT.get(meta["aspect_ratios"][0], "9:16")

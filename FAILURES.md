@@ -327,3 +327,21 @@ This file is graded: what earns marks is the honest loop of break → try → fi
 - Lesson: a cache must return the same value it computed, bit for bit. Two
   code paths that "mean the same thing" are two answers. This is exactly why
   the brief asks for the clean-clone run.
+
+### F19: the uncached path of the keyframe stage crashed — and only a real call could show it
+- When/symptom: 2026-11-26. Testing "change one prompt, make one call" in a
+  clone: with the key present, `python3 -m pipeline.keyframes` died with
+  `NameError: name 'minimax_image' is not defined` instead of drawing the
+  image.
+- What I tried: read the traceback. While making the stage ask for its key only
+  on a cache miss (F16) I moved the key check into a helper and, with it,
+  dropped the `from pipeline.minimax_image import minimax_image` line that
+  lived beside it.
+- Why nothing caught it: the clean-clone run passes with every asset cached,
+  so the miss path never executed; and the error was a `NameError` outside the
+  `except RuntimeError` that logs failures, so it left no line in `runs.jsonl`.
+- Fix or workaround: import restored. Re-test in a clone: with one prompt
+  changed and no key, the stage asks for the key; with the key, it makes
+  exactly one call (image-01, 18.5 s, $0.0035) and reports ten cache hits.
+- Lesson: a reproducibility test that only replays cache hits proves the cache,
+  not the pipeline. Exercise the miss path with a real call before a live demo.
