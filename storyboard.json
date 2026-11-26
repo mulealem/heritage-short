@@ -1,145 +1,203 @@
 {
   "meta": {
-    "title": "Saturday Injera",
-    "status": "draft",
-    "narration_language": "en",
-    "aspect_ratios": ["9:16", "16:9"],
-    "audience": "PLACEHOLDER — replace with your real audience, e.g. 'my cousins in the diaspora, watching on their phones'",
-    "intent": "PLACEHOLDER — replace with your intent, e.g. 'they should feel that home is something you can still taste from far away'",
-    "narrator_style": "calm, warm, unhurried",
-    "style_block": "warm documentary photography, golden hour light, soft grain like 35mm film, earthy tones, gentle shadows",
+    "title": "Eat, My Clothes, Eat!",
+    "title_local": "ብሉ ልብሶቼ ብሉ",
+    "status": "locked",
+    "narration_language": "am",
+    "aspect_ratios": [
+      "9:16",
+      "16:9"
+    ],
+    "audience": "habesha households everywhere — families who grew up on Aleqa Gebre Hanna stories, plus anyone who loves a sharp folk-tale sting, watching vertical on their phones",
+    "intent": "they should laugh at the satire and feel its sting — and see, in every beat, a whole room performing its snobbery and its shame: everyone knows a gatekeeper who judges cloth before character, and they should leave quoting the punchline",
+    "narrator_style": "a warm Amharic folk storyteller, playful and theatrical, relishing the dialogue",
+    "style_block": "single comic-book panel, vibrant graphic-novel animation still, bold black ink contours, flat saturated colour blocking with halftone dot shading, dramatic foreshortened angles, glowing golden rim light against deep teal shadows, subtle chromatic offset, kinetic comic composition, rich Ethiopian palette of gold, crimson and indigo, no text, no lettering, no speech balloons, no watermark",
     "image_width": 720,
-    "image_height": 1280
+    "image_height": 1280,
+    "timing": {
+      "beat_pad_seconds": 0.5,
+      "pause_cap_seconds": 0.4,
+      "narration_tempo": 1.05
+    }
   },
   "character_sheet": {
-    "prompt": "character reference sheet of Emaye, an Ethiopian grandmother in her sixties with a kind lined face, grey braided hair, wearing a white cotton netela with a woven green border; front view and three-quarter view, natural kitchen light",
-    "reference_notes": "Every keyframe must show the same face, the same netela, the same kitchen. Check the face and hands before spending GPU time on a clip."
+    "prompt": "comic character reference sheet on warm paper, no text, two Ethiopian men of the nineteenth-century highlands drawn in bold ink line art with flat colour and halftone shading: Aleqa Gebre Hanna, a lean scholar in his late fifties with a sharp expressive face, salt-and-pepper beard, a cream turban with a gold band, in a white shamma with gold-and-red tibeb borders over a dark robe; and the Gatekeeper, a stout proud man of forty with short oiled black hair, bare-headed with no turban and no hat, in an ornate dark-teal velvet kabba with gold trim. Front and three-quarter views of each on one page",
+    "reference_notes": "Two faces must stay consistent: Gebre Hanna older, lean, quietly mischievous; the Gatekeeper stout, smug, over-dressed, and strictly bare-headed. Check both faces before spending GPU time on a clip."
   },
   "music": {
-    "caption": "gentle Ethiopian instrumental, solo krar plucks over a soft warm pad, pastoral and nostalgic, sparse texture with room for a voice, handmade feel",
-    "bpm": 72,
-    "key": "A major",
+    "caption": "playful theatrical Ethiopian comic-book score in traditional pentatonic qenet (Ambassel and Bati feel), expressive bowed masinko fiddle dancing over bouncy two-headed kebero drums and washint bamboo flute flourishes, comic brass-like stingers, sudden dead-air silences for punchlines, satirical swagger, joyous Habesha wedding energy",
+    "bpm": 118,
+    "key": "A minor (pentatonic qenet feel)",
     "instrumental": true,
     "candidates": 3,
     "seed": 42
   },
   "end_card": {
-    "text": "Made with AI",
-    "subtitle": "written by our family, pictures and music generated with open models",
-    "seconds": 2.5
+    "text": "Judge a person by their character, not their cloth.",
+    "text_am": "ሰውን በልብሱ ሳይሆን በስብዕናው መዝኑት።",
+    "subtitle": "a folk tale of Aleqa Gebre Hanna — made with AI",
+    "seconds": 3.0
   },
   "shots": [
     {
-      "id": "s1_market",
-      "duration_s": 8,
+      "id": "s1_das",
+      "duration_s": 6.2,
       "shot_size": "extreme_wide",
-      "image_prompt": "extreme wide shot of an old Ethiopian market street at golden hour, dusty light between low stone buildings, tiny figures carrying baskets",
-      "motion_prompt": "slow gentle push in, a few people walking through the far background, dust drifting in the light, camera steady",
+      "framing": "extreme_wide",
+      "image_prompt": "comic book establishing panel, low wide angle inside a sprawling Ethiopian wedding das tent draped in woven striped cloth, crowds of men and women in white habesha kemis with colourful tibeb borders dancing eskista with raised shoulders, musicians playing a bowed masinko fiddle and two-headed kebero drum, clay jebena coffee pots steaming on fresh green grass, servers carrying woven baskets through the crowd, warm lantern light",
+      "motion_prompt": "dancers shake their shoulders in eskista rhythm, servers weave between seated elders, drummers pound, steam and dust glow in the lamplight, camera drifts slowly through the crowd",
       "narration": {
-        "lang": "en",
-        "text": "Every Saturday of my childhood began the same way: before the sun, before the call to prayer, with the sound of my grandmother washing her hands."
+        "lang": "am",
+        "text": "ከበሮ ይመታል፣ ጠጅ ይቀዳል፣ መላው ዳስ በእስክስታ ደምቋል።",
+        "en": "The kebero pounds, the tej flows, and the whole das is alive with eskista."
       },
-      "reason": "Establishes where and when the story happens, and puts the narrator's relationship to Emaye in one line.",
+      "reason": "Opens at full Habesha wedding energy with dancers, musicians, servers and guests filling the das, so the gate's cold snobbery hits by contrast; establishes the feast everyone is here for.",
       "seed": 101,
-      "music_cue": "score enters soft, single krar notes"
+      "music_cue": "full festive energy, masinko leading"
     },
     {
-      "id": "s2_kitchen",
-      "duration_s": 8,
-      "shot_size": "medium",
-      "image_prompt": "medium shot of Emaye in her kitchen at dawn, kneading teff dough in a clay bowl, steam rising from a round mitad griddle beside her",
-      "motion_prompt": "her hands keep kneading the dough, slow breathing motion, steam drifts upward, camera locked off",
-      "narration": {
-        "lang": "en",
-        "text": "She mixed the teff the night before and let it sour, and she said the waiting was the whole secret."
-      },
-      "reason": "First clear look at the main character doing the central ritual; the 'waiting' line plants the film's theme.",
-      "seed": 102,
-      "music_cue": "pad joins under the krar, very quiet"
-    },
-    {
-      "id": "s3_hands",
-      "duration_s": 6,
-      "shot_size": "insert",
-      "image_prompt": "close-up insert of weathered hands spreading pale teff batter in a slow spiral across a hot black mitad, tiny bubbles forming",
-      "motion_prompt": "the hand pours and spreads the batter in one slow spiral, bubbles rise and pop, steam, camera fixed",
-      "narration": {
-        "lang": "en",
-        "text": "The batter went on in one slow spiral, and the pan answered with a thousand small bubbles."
-      },
-      "reason": "Texture insert: the most tactile image of the film; gives the audience the sound and feel of the ritual.",
-      "seed": 103,
-      "music_cue": "sparse, let the pan rhythm lead"
-    },
-    {
-      "id": "s4_face",
-      "duration_s": 7,
-      "shot_size": "close_up",
-      "image_prompt": "close-up of Emaye's face lit by warm kitchen light, eyes following the griddle, faint smile, steam softening the background",
-      "motion_prompt": "she slowly turns her head toward the camera and smiles slightly, camera pushes in gently",
-      "narration": {
-        "lang": "en",
-        "text": "She never measured anything. She said the batter tells you when it is ready, if you are patient enough to listen."
-      },
-      "reason": "Emotional centre of the film: her face while she says the film's proverb-like line.",
-      "seed": 104,
-      "music_cue": "krar melody returns, tender"
-    },
-    {
-      "id": "s5_doorway",
-      "duration_s": 8,
-      "shot_size": "medium",
-      "image_prompt": "medium shot from inside a dim kitchen, a child of about eight silhouetted in the bright doorway watching Emaye work, morning light in dust",
-      "motion_prompt": "the child shifts weight and takes one small step inside, Emaye stays working, light flickers gently, camera static",
-      "narration": {
-        "lang": "en",
-        "text": "I was that child in the doorway. Too young to help, too curious to leave, learning without knowing I was learning."
-      },
-      "reason": "Introduces the narrator as a character and makes the memory personal rather than documentary.",
-      "seed": 105,
-      "music_cue": "pad rises slightly, warm"
-    },
-    {
-      "id": "s6_firstbite",
-      "duration_s": 7,
-      "shot_size": "close_up",
-      "image_prompt": "close-up of Emaye's hands tearing the first piece of warm injera from the mitad and offering it toward the camera, steam curling off the bread",
-      "motion_prompt": "the hands tear the piece and extend it slowly toward the camera, steam drifts, camera very slightly pushes in",
-      "narration": {
-        "lang": "en",
-        "text": "The first piece was never hers. It went to the child in the doorway, still too hot to hold."
-      },
-      "reason": "The giving gesture is the heart of the story: generosity before comfort.",
-      "seed": 106,
-      "music_cue": "silence for one beat, then soft krar"
-    },
-    {
-      "id": "s7_table",
-      "duration_s": 9,
+      "id": "s2_arrival",
+      "duration_s": 9.3,
       "shot_size": "wide",
-      "image_prompt": "wide shot of a family gathered around a low mesob table sharing injera from the same platter, hands crossing the frame, warm lamplight at dusk",
-      "motion_prompt": "hands reach and take pieces of food, gentle laughter movement in shoulders, camera slowly pulls back",
+      "framing": "wide_to_medium",
+      "image_prompt": "wide comic book environmental panel, dusty highland road leading up to a festive Ethiopian stone compound entrance glowing with lanterns and striped tent fabric in the background: walking up the road in the foreground, Aleqa Gebre Hanna in a cream turban with a gold band, dusty patched brown gabi, worn leather sandals, and wooden staff, while finely dressed wedding guests in gleaming white shamma stride past him toward the crowded gate without greeting him",
+      "motion_prompt": "he walks toward the camera, the gabi swaying, finely dressed guests pass without greeting him, dust drifts in the golden backlight, camera pushes in slowly",
       "narration": {
-        "lang": "en",
-        "text": "By evening the whole street had found a reason to pass through her kitchen, because in her house there was always one more plate than there were guests."
+        "lang": "am",
+        "text": "አለቃ ገብረ ሃና ከመንገድ በቀጥታ ደረሱ፤ አቧራማ የተጣፈ ጋቢ፣ ያረጀ ጫማ፣ ግን ብልህና አስተዋይ ዓይን።",
+        "en": "Aleqa Gebre Hanna arrives straight from the road: dusty patched gabi, worn sandals, and the sharpest eyes in the empire."
       },
-      "reason": "Widens the story from grandmother and child to community; the payoff of her habit.",
-      "seed": 107,
-      "music_cue": " fullest point of the score, still gentle"
+      "reason": "Introduces the hero inside the lively approach to the compound — a dusty traveller sharing the road with finely dressed wedding-goers who already look down on him, so the rejection is social from the first step.",
+      "seed": 102,
+      "music_cue": "music dips, a single masinko phrase"
     },
     {
-      "id": "s8_dusk",
-      "duration_s": 9,
-      "shot_size": "medium_close",
-      "image_prompt": "medium close shot of the empty kitchen at dusk, the mitad cooling on its stand, Emaye's stool beside it, blue evening light through the small window",
-      "motion_prompt": "dust settles in the last light, a curtain moves faintly, very slow push in, everything else still",
+      "id": "s3_gatekeeper",
+      "duration_s": 8.6,
+      "shot_size": "wide",
+      "framing": "wide_to_interaction",
+      "image_prompt": "wide comic book environmental panel at the grand wedding compound gate: the stout bare-headed gatekeeper in a dark-teal velvet kabba with gold trim stands squarely in the gateway and thrusts one open palm flat toward the dusty traveller in an unmistakable stop gesture, scowling; facing him in the dusty lane, Aleqa Gebre Hanna in a patched brown gabi and cream turban with a gold band waits calmly on his wooden staff; well-dressed guests file past behind the gatekeeper, staring and whispering, the lantern-lit festive das glowing behind",
+      "motion_prompt": "the gatekeeper looks the visitor up and down, raises his hand and points him away, guests file past staring and whispering, camera holds wide then pushes toward the pair",
       "narration": {
-        "lang": "en",
-        "text": "She is gone now, but every time I wait for anything, bread or news or grief, I hear her: the waiting is the whole secret. This film was made with AI so that her kitchen would not be forgotten."
+        "lang": "am",
+        "text": "ጠባቂው ከላይ እስከ ታች በንቀት አያቸው። «ይህ ድግስ ለክቡራን እንግዶች ነው፣ አንተ ሽማግሌ! ሂድና የሚገባ ልብስ ለብሰህ ና!»",
+        "en": "The gatekeeper looks him up and down with scorn. \"This feast is for honorable guests, old man! Go home and dress decently!\""
       },
-      "reason": "Closure: connects the proverb to the present, states the film's purpose, and justifies the AI end card.",
+      "reason": "Shows the full social theatre of the rejection — the glowing das behind the gatekeeper, guests and servers watching or piling on, and Gebre Hanna's calm, unshaken reaction and departure inside the environment rather than isolated face cutaways.",
+      "seed": 103,
+      "music_cue": "music stops under the line"
+    },
+    {
+      "id": "s4_change",
+      "duration_s": 7.2,
+      "shot_size": "wide",
+      "framing": "medium_wide",
+      "image_prompt": "comic book wide interior panel inside a traditional Ethiopian highland stone-and-mud house: warm sunlight slanting through an open wooden shuttered window onto a dusty patched brown gabi tossed briskly onto a wooden wall peg with comic speed lines, beside a carved wooden chest propped open showing folded snow-white cloth and gold embroidery, earthen floor and woven reed mats",
+      "motion_prompt": "the gabi flies onto its peg, the chest opens, water splashes and droplets scatter, hands move fast through frame, camera pans across the room",
+      "narration": {
+        "lang": "am",
+        "text": "አለቃ ገብረ ሃና አልተከራከሩም። ፈገግ ብለው ወደ ቤታቸው ተመለሱ — ትእዛዙን ቃል በቃል ለመፈጸም።",
+        "en": "Gebre Hanna does not argue. He smiles and heads home — to obey the order to the letter."
+      },
+      "reason": "The comic hinge: literal obedience is the heart of the satire; showing him physically shed the dusty gabi inside his highland home grounds the transformation in a real place.",
+      "seed": 104,
+      "music_cue": "rhythmic drumbeat, syncopated"
+    },
+    {
+      "id": "s5_dressed",
+      "duration_s": 9.3,
+      "shot_size": "medium",
+      "framing": "medium_to_wide",
+      "image_prompt": "comic book hero panel, low dramatic angle at the stone doorway: Aleqa Gebre Hanna in his cream turban with a gold band, transformed in a gleaming snow-white cotton shamma with intricate red-and-gold tibeb woven borders and a royal deep-indigo velvet kabba draped cape-like over his shoulders with heavy gold embroidery, planting a polished dark wooden kezera walking stick firmly on the stone step, radiant golden backlight",
+      "motion_prompt": "he settles the velvet kabba over his shoulders with one arm, plants the walking stick, chin up, camera rises with him",
+      "narration": {
+        "lang": "am",
+        "text": "በረዶ የመሰለ ነጭ ሸማ፣ በወርቅ የተጠለፈ የካቲፋ ካባ፣ የሚያብረቀርቅ ከዘራ። ያው ሰው — ግን ተለውጦ።",
+        "en": "Out he steps: a snow-white shamma, a velvet kabba, a polished kezera stick. The same man, transformed."
+      },
+      "reason": "The transformation shot — the clothes arrive as a character of their own, and the village instantly reads them: neighbours bow, children follow, the same man is suddenly treated as a different man.",
+      "seed": 105,
+      "music_cue": "drumroll building"
+    },
+    {
+      "id": "s6_welcome",
+      "duration_s": 8.1,
+      "shot_size": "wide",
+      "framing": "wide_interaction",
+      "image_prompt": "wide comic book panel at the wedding compound gate: the stout bare-headed gatekeeper in his dark-teal velvet kabba with gold trim is bent forward in an exaggerated deep bow, torso nearly parallel to the ground, head lowered, both hands pressed on his knees; Aleqa Gebre Hanna in a cream turban with a gold band, snow-white tibeb shamma and royal indigo velvet kabba walks calmly past him; behind them amazed guests, servers holding trays and women ululating with raised hands fill the sunlit courtyard",
+      "motion_prompt": "the gatekeeper folds into a deep bow and holds it, the hero walks past in slow motion, women ululate and guests turn, camera tracks ahead of him",
+      "narration": {
+        "lang": "am",
+        "text": "ተመለሱ፤ ያው ጠባቂ ተደናግጦ እጅ እስኪነካ ዝቅ ብሎ አጎነበሰ፤ እልልታውም እጥፍ ሆነ።",
+        "en": "He returns — and the same gatekeeper gasps, bowing nearly to the ground, while the ululations ring twice as loud."
+      },
+      "reason": "The satirical reversal: identical man, different cloth, opposite reception — shown through physical interaction with the gatekeeper, bystanders, ululating women and the rushing host together.",
+      "seed": 106,
+      "music_cue": "triumphant swell, ililta feel"
+    },
+    {
+      "id": "s7_feast",
+      "duration_s": 7.1,
+      "shot_size": "wide",
+      "framing": "wide_to_insert",
+      "image_prompt": "comic book wide interior panel inside the bustling das: the crimson-robed Ethiopian host happily guiding Aleqa Gebre Hanna (cream turban with gold band, snow-white shamma, indigo velvet kabba) by the arm to an ornate cushioned seat of honor at the centre of the tent, while a ring of seated guests lean forward smiling and applauding, musicians play nearby, and smiling servers carry covered woven mesobs and berele flasks toward them",
+      "motion_prompt": "the host guides him by the arm through the applauding ring, servers set down the covered mesob and pour tej, steam rises, camera glides along the procession",
+      "narration": {
+        "lang": "am",
+        "text": "ባለድግሱ ወደ ክብር መቀመጫው መሯቸው፤ «አለቃ! ብሉ፣ ጠጡ — ሁሉም ለእርስዎ ነው!»",
+        "en": "The host leads him to the seat of honor: \"Aleqa! Eat, drink — everything here is yours!\""
+      },
+      "reason": "Shows the full social ceremony of seating the honoured guest — host gesturing, guests making way, servers opening the mesob and pouring tej — before closing on the feast itself.",
+      "seed": 107,
+      "music_cue": "festive again, full"
+    },
+    {
+      "id": "s8_deadpan",
+      "duration_s": 6.0,
+      "shot_size": "wide",
+      "framing": "wide_to_close",
+      "image_prompt": "comic book wide atmospheric panel inside the hushed das tent: seated motionless at the centre behind the steaming mesob, Aleqa Gebre Hanna in his cream turban with a gold band and royal velvet kabba gazes quietly from the food to the ring of faces; all around him the tent is frozen in suspense — kebero drummers hold their hands raised mid-beat, masinko bows hang still, servers pause holding berele flasks, and the crimson-robed host and dozens of guests lean forward wide-eyed in dead silence",
+      "motion_prompt": "the whole room holds still, only his eyes move from the food to the host, a single drumstick trembles, camera creeps in",
+      "narration": {
+        "lang": "am",
+        "text": "ከዚያ ዘፈኑና ከበሮው ጸጥ አለ፤ መላው ዳስም ትንፋሹን ውጦ ጠበቀ።",
+        "en": "Then the music falls silent, and the whole das holds its breath."
+      },
+      "reason": "The comic pause — the entire room (musicians, servers, host, guests) freezes in breathless silence around Gebre Hanna before the twist drops.",
       "seed": 108,
-      "music_cue": "score resolves to the opening krar phrase, fade"
+      "music_cue": "sharp stop, one masinko screech, silence"
+    },
+    {
+      "id": "s9_mess",
+      "duration_s": 8.8,
+      "shot_size": "wide",
+      "framing": "wide_interaction",
+      "image_prompt": "comic book wide environmental panel inside a low Ethiopian wedding das tent lined with woven striped cloth, guests seated on reed mats around a woven mesob: Aleqa Gebre Hanna, fully dressed in his snow-white tibeb shamma and cream turban with a gold band, wipes a thick fistful of chunky orange-red doro wot stew with visible shredded chicken and boiled egg down the front panel of his shamma, which stays wrapped closed; the stain is clearly food; beside him the crimson-robed host leaps upright in horror, a woman guest recoils with hands over her mouth, and a server freezes holding a berele flask",
+      "motion_prompt": "his hand smears the stew deliberately across the white cloth, the host lunges toward his arm, tej pours down the velvet shoulder, guests recoil, camera shakes with the shock",
+      "narration": {
+        "lang": "am",
+        "text": "ቀይ ዶሮ ወጥ ዘግነው በነጩ ሸማቸው ላይ ቀቡት፤ ስጋ በእጅጌው፣ ጠጅ በካባው ላይ አፈሰሱ። ባለድግሱም ደንግጠው ጮኹ።",
+        "en": "He scoops red doro wot and smears it across his white shamma — meat in the sleeve, tej poured on the cloak. The host cries out."
+      },
+      "reason": "Shows the full environmental shock across the das first, then the physical confrontation between the host and Gebre Hanna with servers and guests reacting beside them, and a quick stain-on-mat beat.",
+      "seed": 109,
+      "music_cue": "silence, only diegetic squelch"
+    },
+    {
+      "id": "s10_punchline",
+      "duration_s": 15.8,
+      "shot_size": "medium",
+      "framing": "interaction_to_wide",
+      "image_prompt": "comic book medium-wide confrontation shot inside the quiet das: on the left, Aleqa Gebre Hanna, fully dressed in a cream turban with a gold band, a snow-white tibeb shamma whose front panel is smeared with thick chunky orange-red doro wot stew with visible pieces of chicken and egg, and a velvet kabba glistening with golden tej, stands calm as Sunday wiping his fingers with a cloth and gesturing at the stained front of his shamma, looking directly at the stunned crimson-robed host and the wide-eyed bare-headed dark-teal gatekeeper opposite him, silent servers and leaning guests framing them",
+      "motion_prompt": "he wipes his fingers calmly, gestures at his stained chest, speaks directly to the host and gatekeeper, the room cracks into laughter only after his last word, camera pushes slowly out",
+      "narration": {
+        "lang": "am",
+        "text": "አለቃ ገብረ ሃና በርጋታ አሉ፦ «ብሉ ልብሶቼ፣ ብሉ! እኔ ራሴን ሆኜ ስመጣ አባረራችሁኝ። ልብሶቼ ሲመጡ ግን የክብር መቀመጫ ሰጣችኋቸው። የጠራችሁት ልብሶቼን እንጂ እኔን አይደለም!»",
+        "en": "Says Gebre Hanna, calm as Sunday: \"Eat, my clothes, eat! I came as myself, and you turned me away. My clothes came, and you gave them the seat of honor. You invited my clothes — not me!\""
+      },
+      "reason": "Delivers the famous line as a direct exchange with the host, gatekeeper, servers and guests watching, before cutting wide to the entire das erupting in laughter and shame-faced reckoning after his final word lands.",
+      "seed": 110,
+      "music_cue": "full kebero and masinko burst for the final seconds"
     }
   ]
 }

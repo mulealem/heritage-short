@@ -1,0 +1,77 @@
+{
+ "model": "Wan-AI/Wan2.2-TI2V-5B-Diffusers",
+ "fps": 24,
+ "resolution": 720,
+ "shots": [
+  {
+   "id": "s1_das",
+   "image": "keyframes/s1_das.png",
+   "prompt": "dancers shake their shoulders in eskista rhythm, ululating women sway, drummers pound, dust and steam glow in the lamplight, camera pushes slowly into the crowd",
+   "seconds": 5.0,
+   "seed": 101
+  },
+  {
+   "id": "s2_arrival",
+   "image": "keyframes/s2_arrival.png",
+   "prompt": "he walks toward the camera with a tired but warm smile, the gabi sways, dust drifts in the golden backlight, camera slowly pushes in",
+   "seconds": 5.0,
+   "seed": 102
+  },
+  {
+   "id": "s3_gatekeeper",
+   "image": "keyframes/s3_gatekeeper.png",
+   "prompt": "the gatekeeper looks the visitor up and down slowly, raises his hand, turns his face away in dismissal, camera holds low and still",
+   "seconds": 5.0,
+   "seed": 103
+  },
+  {
+   "id": "s4_change",
+   "image": "keyframes/s4_change.png",
+   "prompt": "the gabi flies onto its peg, water splashes and droplets scatter, hands move fast through frame, camera static",
+   "seconds": 5.0,
+   "seed": 104
+  },
+  {
+   "id": "s5_dressed",
+   "image": "keyframes/s5_dressed.png",
+   "prompt": "he throws the velvet kabba over his shoulders with one arm, grips the walking stick, chin up, camera pushes in with him",
+   "seconds": 5.0,
+   "seed": 105
+  },
+  {
+   "id": "s6_welcome",
+   "image": "keyframes/s6_welcome.png",
+   "prompt": "the hero walks in slow motion toward the camera, the gatekeeper bows low and holds it, guests turn and begin to ululate, camera tracks backward ahead of him",
+   "seconds": 5.0,
+   "seed": 106
+  },
+  {
+   "id": "s7_feast",
+   "image": "keyframes/s7_feast.png",
+   "prompt": "hands pour tej into small glasses, steam rises off the wot, servers set the giant mesob down in front of the honoured guest, camera glides across the food",
+   "seconds": 5.0,
+   "seed": 107
+  },
+  {
+   "id": "s8_deadpan",
+   "image": "keyframes/s8_deadpan.png",
+   "prompt": "he blinks once, slowly, eyes moving across the feast, everything behind him frozen, camera locked on his face",
+   "seconds": 5.0,
+   "seed": 108
+  },
+  {
+   "id": "s9_mess",
+   "image": "keyframes/s9_mess.png",
+   "prompt": "the hand smears the stew slowly and deliberately across the white cloth, sauce drips, tej pours over the velvet shoulder, camera holds tight",
+   "seconds": 5.0,
+   "seed": 109
+  },
+  {
+   "id": "s10_punchline",
+   "image": "keyframes/s10_punchline.png",
+   "prompt": "he wipes his hands calmly, lifts his gaze from the host to the crowd, and breaks into a slow triumphant smirk, camera pushes in very slowly",
+   "seconds": 5.0,
+   "seed": 110
+  }
+ ]
+}

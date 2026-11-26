@@ -1,0 +1,176 @@
+{
+  "meta": {
+    "title": "Eat, My Clothes, Eat!",
+    "title_local": "ብሉ ልብሶቼ ብሉ",
+    "status": "locked",
+    "narration_language": "en",
+    "aspect_ratios": [
+      "9:16"
+    ],
+    "audience": "habesha households everywhere — families who grew up on Aleqa Gebre Hanna stories, plus anyone who loves a sharp folk-tale sting, watching vertical on their phones",
+    "intent": "they should laugh at the satire and feel its sting: everyone knows a gatekeeper who judges cloth before character — and they should leave quoting the punchline",
+    "narrator_style": "a folk storyteller: warm, rhythmic, playful, relishing the quoted lines, with a theatrical pause before the punchline",
+    "style_block": "single comic-book panel, vibrant graphic-novel animation still, bold black ink contours, flat saturated colour blocking with halftone dot shading, dramatic foreshortened angles, glowing golden rim light against deep teal shadows, subtle chromatic offset, kinetic comic composition, rich Ethiopian palette of gold, crimson and indigo, no text, no lettering, no speech balloons, no watermark",
+    "image_width": 720,
+    "image_height": 1280
+  },
+  "character_sheet": {
+    "prompt": "comic-style illustration, two men of the nineteenth-century Ethiopian highlands standing side by side: a lean elder with a salt-and-pepper beard in a white shamma with gold-and-red trim, and a stout proud man in a dark velvet cloak with gold trim, warm paper background",
+    "reference_notes": "Two faces must stay consistent: Gebre Hanna older, lean, quietly mischievous; the Gatekeeper stout, smug, over-dressed. Check both faces before spending GPU time on a clip."
+  },
+  "music": {
+    "caption": "playful theatrical Ethiopian comic-book score, masinko fiddle dancing over kebero drums with dramatic stingers and sudden silences, satirical swagger, wedding energy",
+    "bpm": 110,
+    "key": "A minor",
+    "instrumental": true,
+    "candidates": 3,
+    "seed": 42
+  },
+  "end_card": {
+    "text": "Judge a person by their character, not their cloth.",
+    "subtitle": "a folk tale of Aleqa Gebre Hanna — made with AI",
+    "seconds": 3.0
+  },
+  "shots": [
+    {
+      "id": "s1_das",
+      "duration_s": 6,
+      "shot_size": "extreme_wide",
+      "image_prompt": "comic book establishing panel, low wide angle inside a sprawling feasting das tent, crowds of men and women in white kemis dancing eskista, musicians bent over masinko and kebero drums, clay jebena pots steaming, lantern light, gold and teal palette",
+      "motion_prompt": "dancers shake their shoulders in eskista rhythm, ululating women sway, drummers pound, dust and steam glow in the lamplight, camera pushes slowly into the crowd",
+      "narration": {
+        "lang": "en",
+        "text": "The kebero pounds, the tej pours, and the whole das is dancing."
+      },
+      "reason": "Opens at full energy so the gate's humiliation lands by contrast; establishes the feast everyone is here for.",
+      "seed": 101,
+      "music_cue": "full festive energy, masinko leading"
+    },
+    {
+      "id": "s2_arrival",
+      "duration_s": 7,
+      "shot_size": "medium",
+      "image_prompt": "comic book panel, Aleqa Gebre Hanna, an Ethiopian man in his late fifties with a lean face and a salt-and-pepper beard walking in from the road in a dusty patched brown gabi cloak over trousers and worn leather sandals, a wooden staff in hand, wind lifting the hem, heroic low angle, golden backlight, halftone sky",
+      "motion_prompt": "he walks toward the camera with a tired but warm smile, the gabi sways, dust drifts in the golden backlight, camera slowly pushes in",
+      "narration": {
+        "lang": "en",
+        "text": "Aleqa Gebre Hanna arrives straight from the road: dusty gabi, worn sandals, the sharpest eyes in the empire."
+      },
+      "reason": "Introduces the hero at his most unimpressive — the setup every retelling depends on.",
+      "seed": 102,
+      "music_cue": "music dips, a single masinko phrase"
+    },
+    {
+      "id": "s3_gatekeeper",
+      "duration_s": 9,
+      "shot_size": "medium_close",
+      "image_prompt": "comic book panel, close on the Gatekeeper, a stout Ethiopian man of forty with oiled hair and a proud face wearing an ornate velvet kabba with gold trim, raising one hand in dismissal and sneering down at the frame, dramatic upward angle, dust motes, deep shadows",
+      "motion_prompt": "the gatekeeper looks the visitor up and down slowly, raises his hand, turns his face away in dismissal, camera holds low and still",
+      "narration": {
+        "lang": "en",
+        "text": "The gatekeeper looks him up and down. \"This feast is for honorable guests, old man. Go home and dress decently!\""
+      },
+      "reason": "The insult that drives the whole tale; the audience must hear the rule before watching it backfire.",
+      "seed": 103,
+      "music_cue": "music stops under the line"
+    },
+    {
+      "id": "s4_change",
+      "duration_s": 5,
+      "shot_size": "insert",
+      "image_prompt": "comic book inset panel, inside a stone highland house, a dusty patched brown gabi tossed over a wooden peg, water splashing from a clay basin, speed lines, warm window light",
+      "motion_prompt": "the gabi flies onto its peg, water splashes and droplets scatter, hands move fast through frame, camera static",
+      "narration": {
+        "lang": "en",
+        "text": "Gebre Hanna does not argue. He smiles, and goes home to obey — exactly."
+      },
+      "reason": "The comic hinge: obedience taken literally is the whole satire; this beat sells his mischief without a word of protest.",
+      "seed": 104,
+      "music_cue": "rhythmic drumbeat, syncopated"
+    },
+    {
+      "id": "s5_dressed",
+      "duration_s": 6,
+      "shot_size": "medium",
+      "image_prompt": "comic book hero panel, Aleqa Gebre Hanna, an Ethiopian man in his late fifties with a lean face and a salt-and-pepper beard transformed in a gleaming white shamma with gold-and-red tibeb borders and a royal velvet kabba, a polished walking stick planted, cape-like drape, low angle, radiant rim light",
+      "motion_prompt": "he throws the velvet kabba over his shoulders with one arm, grips the walking stick, chin up, camera pushes in with him",
+      "narration": {
+        "lang": "en",
+        "text": "Out: a gleaming white shamma, a velvet kabba, a polished stick. The same man, transformed."
+      },
+      "reason": "The transformation shot — the clothes arrive as a character of their own.",
+      "seed": 105,
+      "music_cue": "drumroll building"
+    },
+    {
+      "id": "s6_welcome",
+      "duration_s": 7,
+      "shot_size": "wide",
+      "image_prompt": "comic book panel, the Gatekeeper, a stout Ethiopian man of forty with oiled hair and a proud face bent in an exaggerated deep bow before Aleqa Gebre Hanna, an Ethiopian man in his late fifties with a lean face and a salt-and-pepper beard entering in white and gold, guests turning to look, ululation energy lines, courtyard golden hour",
+      "motion_prompt": "the hero walks in slow motion toward the camera, the gatekeeper bows low and holds it, guests turn and begin to ululate, camera tracks backward ahead of him",
+      "narration": {
+        "lang": "en",
+        "text": "He returns — and the same gatekeeper gasps, bowing low, while the ululations ring twice as loud."
+      },
+      "reason": "The satirical exaggeration: identical man, different cloth, opposite reception.",
+      "seed": 106,
+      "music_cue": "triumphant swell, ililta feel"
+    },
+    {
+      "id": "s7_feast",
+      "duration_s": 8,
+      "shot_size": "insert",
+      "image_prompt": "comic book panel, overhead shot of a woven mesob piled with injera and rich red doro wot, hands pouring golden tej from a berele flask, steam curling, bold table lines",
+      "motion_prompt": "hands pour tej into small glasses, steam rises off the wot, servers set the giant mesob down in front of the honoured guest, camera glides across the food",
+      "narration": {
+        "lang": "en",
+        "text": "The host leads him to the seat of honor: \"Aleqa! Eat, drink — everything here is yours!\""
+      },
+      "reason": "The feast must look irresistible so the mess that follows is shocking; the host's welcome is the satirical peak.",
+      "seed": 107,
+      "music_cue": "festive again, full"
+    },
+    {
+      "id": "s8_deadpan",
+      "duration_s": 5,
+      "shot_size": "close_up",
+      "image_prompt": "comic book extreme close-up panel, the face of Aleqa Gebre Hanna, an Ethiopian man in his late fifties with a lean face and a salt-and-pepper beard, calm and unreadable, one eyebrow lifting, halftone shadows, blurred festive crowd behind him",
+      "motion_prompt": "he blinks once, slowly, eyes moving across the feast, everything behind him frozen, camera locked on his face",
+      "narration": {
+        "lang": "en",
+        "text": "Then the music dies, and the whole das holds its breath."
+      },
+      "reason": "The comic pause — tension before the twist; the audience must see the mischief arrive in his eyes.",
+      "seed": 108,
+      "music_cue": "sharp stop, one masinko screech, silence"
+    },
+    {
+      "id": "s9_mess",
+      "duration_s": 9,
+      "shot_size": "insert",
+      "image_prompt": "comic book single close-up insert panel, a hand smearing bright red doro wot across a pristine white shamma with gold tibeb borders, a piece of meat tucked into a sleeve, tej splashing from a raised berele, shock lines",
+      "motion_prompt": "the hand smears the stew slowly and deliberately across the white cloth, sauce drips, tej pours over the velvet shoulder, camera holds tight",
+      "narration": {
+        "lang": "en",
+        "text": "He scoops red doro wot and smears it across the white shamma — meat in the sleeve, tej on the cloak. The host cries out."
+      },
+      "reason": "The messy twist itself: the clothes get served the feast, which is the punchline made visible.",
+      "seed": 109,
+      "music_cue": "silence, only diegetic squelch"
+    },
+    {
+      "id": "s10_punchline",
+      "duration_s": 12,
+      "shot_size": "medium_close",
+      "image_prompt": "comic book hero panel, medium shot from the waist up, Aleqa Gebre Hanna in a white shamma that is heavily stained and smeared with bright red doro wot across the chest, a velvet kabba on his shoulders, wiping his hands, chin lifted in a triumphant smirk over a stunned crowd, dramatic low angle, gold rim light",
+      "motion_prompt": "he wipes his hands calmly, lifts his gaze from the host to the crowd, and breaks into a slow triumphant smirk, camera pushes in very slowly",
+      "narration": {
+        "lang": "en",
+        "text": "Says Gebre Hanna, calm as Sunday: \"Eat, my clothes, eat! I came as myself, and you turned me away. My clothes came, and you gave them the seat of honor. You invited my clothes — not me!\""
+      },
+      "reason": "The punchline the whole tale exists for — the most quoted line, held in one unbroken close-up.",
+      "seed": 110,
+      "music_cue": "full kebero and masinko burst for the final seconds"
+    }
+  ]
+}

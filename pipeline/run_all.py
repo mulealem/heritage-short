@@ -1,12 +1,41 @@
 """One-command run: validate -> narration -> keyframes -> shots -> music -> assemble.
 
-Usage:
-    python3 -m pipeline.run_all            # real mode where keys exist, mock elsewhere
-    FORCE_MOCK=1 python3 -m pipeline.run_all   # fully offline
+Real only. A preflight checks API keys before anything runs; each stage then
+hard-fails with instructions if its inputs are missing. Note the bootstrap
+order on a fresh project: narration + keyframes (hosted APIs) come first —
+their outputs are what you upload to Kaggle to produce the clips and the
+score that the shots/music stages require. Rerun `make film` after each
+Kaggle round-trip; finished work is cache-hit and costs nothing.
 """
 import sys
 
 from pipeline import common
+
+KEYS = [
+    ("GEMINI_API_KEY", "narration/script — free key: https://aistudio.google.com/apikey"),
+    ("CF_ACCOUNT_ID", "keyframes — your Cloudflare account id (dash.cloudflare.com)"),
+    ("CF_API_TOKEN", "keyframes — Cloudflare Workers AI token"),
+]
+
+
+def preflight():
+    print("=== heritage-short pipeline, run %s (real only) ===" % common.RUN_ID)
+    missing = [(k, hint) for k, hint in KEYS if not common.has_key(k)]
+    if missing:
+        print("missing API keys in .env:")
+        for k, hint in missing:
+            print("  %s — %s" % (k, hint))
+        sys.exit("copy .env.example to .env and fill in every key above")
+
+    clips = sorted((common.OUT / "shots").glob("*.mp4")) if (common.OUT / "shots").exists() else []
+    score = common.OUT / "music" / "score_final.wav"
+    print("keys: ok (gemini, cloudflare)")
+    print("kaggle artifacts: %d/8 clips, score %s"
+          % (len(clips), "ready" if score.exists() else "missing"))
+    if len(clips) < 8 or not score.exists():
+        print("(stages needing them will stop with instructions — expected on a "
+              "first run; narration+keyframes come first because the Kaggle "
+              "workers consume their outputs)")
 
 
 def main():
@@ -18,16 +47,7 @@ def main():
         ("music", "pipeline.music"),
         ("assemble", "pipeline.assemble"),
     ]
-    print("=== heritage-short pipeline, run %s ===" % common.RUN_ID)
-    if common.force_mock():
-        print("mode: FORCE MOCK (no network model calls)")
-    else:
-        have = {
-            "gemini(tts/script)": common.has_key("GEMINI_API_KEY"),
-            "cloudflare(keyframes)": common.has_key("CF_ACCOUNT_ID") and common.has_key("CF_API_TOKEN"),
-        }
-        print("mode: " + ", ".join("%s=%s" % (k, "real" if v else "MOCK") for k, v in have.items()))
-        print("wan2.2 clips: picked up from outputs/shots/ when present (Kaggle)")
+    preflight()
 
     for name, module in stages:
         print("\n--- %s ---" % name)

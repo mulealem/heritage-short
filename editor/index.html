@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eat, My Clothes, Eat! — film editor</title>
+<style>
+  :root{--bg:#12100e;--panel:#1b1714;--line:#332b24;--ink:#f3e9d6;--dim:#a79880;
+        --gold:#f5b21c;--red:#d6332c;--teal:#0f3b43;--ok:#3fae6a;--bad:#d64545}
+  @font-face{font-family:"Noto Ethiopic";src:url("/editor/assets/NotoSansEthiopic.ttf") format("truetype")}
+  *{box-sizing:border-box}
+  textarea,input{font-family:ui-sans-serif,system-ui,-apple-system,"Noto Ethiopic",sans-serif}
+  body{margin:0;font:14px/1.45 ui-sans-serif,system-ui,-apple-system,"Noto Ethiopic",Segoe UI,Roboto,sans-serif;
+       background:var(--bg);color:var(--ink)}
+  header{display:flex;align-items:center;gap:14px;padding:10px 16px;border-bottom:1px solid var(--line);
+         background:linear-gradient(180deg,#1d1813,#16120f)}
+  header h1{font-size:15px;margin:0;letter-spacing:.3px}
+  header .sp{flex:1}
+  .pill{font-size:12px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:2px 9px}
+  .pill b{color:var(--ink);font-weight:600}
+  button{font:inherit;color:var(--ink);background:#241d17;border:1px solid var(--line);
+         border-radius:7px;padding:7px 11px;cursor:pointer}
+  button:hover{border-color:#58483a}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  button.gold{background:var(--gold);color:#1a1206;border-color:#c98f10;font-weight:600}
+  button.red{background:#2a1614;border-color:#55241f;color:#ffb4aa}
+  button.sm{padding:4px 8px;font-size:12px}
+  main{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 52px)}
+  aside{overflow:auto;border-right:1px solid var(--line);padding:10px}
+  .shot{display:flex;gap:9px;align-items:center;padding:7px;border-radius:9px;cursor:pointer;
+        border:1px solid transparent}
+  .shot:hover{background:#1a1511}
+  .shot.on{background:#211a14;border-color:#4a3a28}
+  .shot img{width:54px;height:96px;object-fit:cover;border-radius:5px;background:#0a0908;
+            border:1px solid #000}
+  .shot .t{font-size:12px}
+  .shot .t b{display:block;font-size:12.5px;letter-spacing:.2px}
+  .shot .t span{color:var(--dim)}
+  section#editor{overflow:auto;padding:16px 20px 80px}
+  h2{font-size:15px;margin:0 0 4px;letter-spacing:.3px}
+  h3{font-size:12px;text-transform:uppercase;letter-spacing:.9px;color:var(--dim);
+     margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:5px}
+  label{display:block;font-size:12px;color:var(--dim);margin:9px 0 4px}
+  input[type=text],input[type=number],textarea{width:100%;background:#0f0c0a;color:var(--ink);
+     border:1px solid var(--line);border-radius:7px;padding:8px 10px;font:inherit}
+  textarea{min-height:74px;resize:vertical}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .pre{white-space:pre-wrap;background:#0d0b09;border:1px dashed #3a2f24;border-radius:7px;
+       padding:9px 11px;color:#cbbfa9;font-size:12px;max-height:150px;overflow:auto}
+  .panelrow{display:grid;grid-template-columns:86px 1fr;gap:10px;border:1px solid var(--line);
+            border-radius:9px;padding:9px;margin-bottom:9px;background:#171210}
+  .panelrow img{width:86px;height:153px;object-fit:cover;border-radius:5px;background:#000}
+  .meta{color:var(--dim);font-size:12px}
+  .tag{display:inline-block;font-size:11px;border:1px solid var(--line);border-radius:5px;
+       padding:1px 6px;color:var(--dim);margin-right:6px}
+  #toast{position:fixed;right:16px;bottom:16px;max-width:420px;z-index:9}
+  .toast{background:#1d1712;border:1px solid #4a3a28;border-left:4px solid var(--gold);
+         border-radius:8px;padding:9px 12px;margin-top:8px;font-size:13px;box-shadow:0 8px 22px #0008}
+  .toast.err{border-left-color:var(--bad)}
+  .toast.ok{border-left-color:var(--ok)}
+  #renderbox{position:fixed;left:0;right:0;bottom:0;max-height:38vh;overflow:auto;display:none;
+             background:#0c0a08;border-top:1px solid var(--line);padding:10px 16px;font-size:12px}
+  #renderbox pre{margin:0;white-space:pre-wrap;color:#bfae92}
+  .dirty{color:var(--gold)}
+  audio{width:100%;margin-top:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Eat, My Clothes, Eat! — editor</h1>
+  <span class="pill" id="envpill">…</span>
+  <span class="pill" id="dirtypill" style="display:none">unsaved changes</span>
+  <span class="sp"></span>
+  <a href="/STORY.md" target="_blank" style="color:var(--dim);font-size:12.5px;text-decoration:none;border:1px solid var(--line);border-radius:7px;padding:7px 10px">Story.md</a>
+  <a href="/PROMPTS.md" target="_blank" style="color:var(--dim);font-size:12.5px;text-decoration:none;border:1px solid var(--line);border-radius:7px;padding:7px 10px">Prompts.md</a>
+  <button id="saveBtn" class="gold">Save</button>
+  <button id="renderBtn">Render film</button>
+</header>
+<main>
+  <aside id="shots"></aside>
+  <section id="editor"><p class="meta">Loading…</p></section>
+</main>
+<div id="toast"></div>
+<div id="renderbox"><div style="display:flex;gap:10px;align-items:center">
+  <b>Render</b><span class="meta" id="rstate"></span><span class="sp" style="flex:1"></span>
+  <button class="sm" onclick="document.getElementById('renderbox').style.display='none'">hide</button>
+</div><pre id="rlog"></pre></div>
+
+<script>
+let S = null, current = 0, dirty = false;
+
+const $ = s => document.querySelector(s);
+const esc = s => (s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const bust = (u, m) => u ? `${u}?v=${Math.round((m || 0) * 1000)}` : null;
+
+function toast(msg, kind='') {
+  const d = document.createElement('div');
+  d.className = 'toast ' + kind;
+  d.innerHTML = msg;
+  $('#toast').appendChild(d);
+  setTimeout(() => d.remove(), kind === 'err' ? 12000 : 6000);
+}
+
+function markDirty(v=true) {
+  dirty = v;
+  $('#dirtypill').style.display = v ? '' : 'none';
+  $('#saveBtn').classList.toggle('gold', true);
+}
+
+function compose(prompt, actor) {
+  const style = S?.env?.style_block || '';
+  const dir = (S?.env?.directives || {})[actor] || '';
+  return style + ' — ' + prompt + (actor ? dir : '');
+}
+
+async function api(path, body) {
+  const r = await fetch(path, body ? {method:'POST', headers:{'Content-Type':'application/json'},
+                                      body: JSON.stringify(body)} : {});
+  const j = await r.json().catch(() => ({ok:false,error:'bad response'}));
+  if (!r.ok) throw new Error(j.error || ('HTTP ' + r.status));
+  return j;
+}
+
+async function load(keepIdx=true) {
+  S = await api('/api/state');
+  $('#envpill').innerHTML = `image: <b>${esc(S.env.provider)}</b> · tts: <b>${esc(S.env.tts)}</b> · voice <b>${esc(S.env.voice)}</b>`;
+  if (!keepIdx) current = 0;
+  current = Math.min(current, S.shots.length - 1);
+  renderShots(); renderEditor(); pollRender();
+}
+
+function renderShots() {
+  $('#shots').innerHTML = S.shots.map((s, i) => `
+    <div class="shot ${i===current?'on':''}" onclick="pick(${i})">
+      ${s.keyframe_url ? `<img src="${bust(s.keyframe_url, s.keyframe_mtime)}" alt="">` : `<div style="width:54px;height:96px"></div>`}
+      <div class="t"><b>${i+1}. ${esc(s.id)}</b>
+        <span>${esc(s.framing || s.shot_size)} · ${s.duration_s}s · ${s.narration_seconds ? s.narration_seconds.toFixed(1)+'s narr' : 'no audio'}${s.narration_state === 'stale' ? ' · <b style="color:#ffb020">stale</b>' : ''}</span>
+      </div>
+    </div>`).join('');
+}
+
+function pick(i) { current = i; renderShots(); renderEditor(); }
+
+function panelRows(s) {
+  const spec = s.panels_spec || {};
+  const rows = [];
+  const thumb = n => `/files/panels/${n}?v=${Date.now()}`;
+  (spec.extras || []).forEach((ex, i) => rows.push({kind:'extra', index:i,
+    name:`${s.id}_x${i+1}.jpg`, prompt: ex.prompt, at: ex.at ?? 0.5,
+    actor: ('actor' in ex) ? ex.actor : spec.actor, role: ex.role}));
+  if (!rows.length) return '<p class="meta">No extra panels defined for this shot.</p>';
+  return rows.map(r => `
+    <div class="panelrow">
+      <div><img src="${thumb(r.name)}" onerror="this.style.opacity=.15" alt=""></div>
+      <div>
+        <div class="meta"><span class="tag">${esc(r.role || ('extra ' + (r.index+1)))}</span>
+          at <b>${Math.round((r.at||0)*100)}%</b> of the shot${r.actor ? ` · ref: <b>${esc(r.actor)}</b>` : ''}</div>
+        <label>Prompt</label>
+        <textarea data-kind="${r.kind}" data-index="${r.index}" oninput="editPanel(this)">${esc(r.prompt)}</textarea>
+        <div class="pre" style="margin-top:6px">${esc(compose(r.prompt, r.actor))}</div>
+        <div class="bar">
+          <button class="sm" onclick="regenPanel('${r.kind}', ${r.index})">Regenerate this panel</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderEditor() {
+  const s = S.shots[current];
+  const n = s.narration || {};
+  $('#editor').innerHTML = `
+    <h2>${current+1}. ${esc(s.id)} <span class="tag">${esc(s.framing || s.shot_size)}</span></h2>
+    ${s.narration_state === 'stale' ? `<p class="meta" style="color:#ffb020;margin:4px 0 12px">Narration audio is stale for this line — the script changed. Run <b>make narration</b> before rendering the film.</p>` : ''}
+    <div class="row3">
+      <div><label>Duration (s, planned)</label>
+        <input type="number" min="3" max="20" step="0.5" value="${s.duration_s}"
+               oninput="editShot('duration_s', +this.value)"></div>
+      <div><label>Seed</label>
+        <input type="number" value="${s.seed}" oninput="editShot('seed', +this.value)"></div>
+      <div><label>Narration audio</label>
+        <div class="meta">${s.narration_seconds ? s.narration_seconds.toFixed(2) + 's' : 'missing'}</div></div>
+    </div>
+
+    <h3>Image prompt</h3>
+    <textarea oninput="editShot('image_prompt', this.value)">${esc(s.image_prompt)}</textarea>
+    <label>Motion prompt (video route only)</label>
+    <textarea oninput="editShot('motion_prompt', this.value)">${esc(s.motion_prompt)}</textarea>
+    <label>Composed prompt actually sent to the image model</label>
+    <div class="pre">${esc(s.composed_prompt)}</div>
+    <div class="bar">
+      <button class="gold" onclick="regenKeyframe(this)">Regenerate keyframe</button>
+      <button onclick="previewKeyframe()">Preview</button>
+      <span class="meta" id="kfmeta"></span>
+    </div>
+    <img id="kf" src="${bust(s.keyframe_url, s.keyframe_mtime) || ''}"
+         style="display:${s.keyframe_url?'block':'none'};width:190px;border-radius:8px;margin-top:10px">
+
+    <h3>Narration</h3>
+    <div class="row">
+      <div><label>Amharic (spoken)</label>
+        <textarea oninput="editNarr('text', this.value)">${esc(n.text || '')}</textarea></div>
+      <div><label>English (subtitles + captions)</label>
+        <textarea oninput="editNarr('en', this.value)">${esc(n.en || '')}</textarea></div>
+    </div>
+    ${s.narration_url ? `<audio controls src="${bust(s.narration_url, Date.now())}"></audio>` : '<p class="meta">No narration audio yet.</p>'}
+    <div class="bar">
+      <button onclick="regenNarration()">Regenerate narration</button>
+      <span class="meta">one TTS call · daily quota applies</span>
+    </div>
+
+    <h3>Why this shot exists</h3>
+    <textarea oninput="editShot('reason', this.value)">${esc(s.reason)}</textarea>
+
+    <h3>Cuts in this beat</h3>
+    ${panelRows(s)}
+  `;
+}
+
+function editShot(key, val) { S.shots[current][key] = val; syncBack(); markDirty(); }
+function editNarr(key, val) { S.shots[current].narration[key] = val; syncBack(); markDirty(); }
+
+function editPanel(el) {
+  const kind = el.dataset.kind, i = +el.dataset.index;
+  const spec = S.shots[current].panels_spec;
+  if (kind === 'insert') spec.insert = el.value;
+  else spec.extras[i].prompt = el.value;
+  syncBack(); markDirty();
+}
+
+function syncBack() {
+  // editor works on shot copies; write them back into the raw documents
+  S.storyboard.shots = S.storyboard.shots.map(orig => {
+    const e = S.shots.find(x => x.id === orig.id);
+    return {...orig, duration_s: e.duration_s, seed: e.seed,
+            image_prompt: e.image_prompt, motion_prompt: e.motion_prompt,
+            reason: e.reason, narration: e.narration};
+  });
+  S.shots.forEach(x => { S.panels.shots[x.id] = x.panels_spec; });
+}
+
+async function save(silent=false) {
+  syncBack();
+  const r = await api('/api/save', {storyboard: S.storyboard, panels: S.panels});
+  if (!r.ok) throw new Error((r.errors || []).join('\n'));
+  markDirty(false);
+  if (!silent) toast('Saved storyboard.json and comic/panels.json', 'ok');
+}
+
+async function regenKeyframe(btn) {
+  if (btn) btn.disabled = true;
+  try {
+    await save(true);
+    toast('Generating keyframe…');
+    const r = await api('/api/regen/keyframe', {shot_id: S.shots[current].id});
+    if (!r.ok) throw new Error(r.error);
+    const s = S.shots[current];
+    s.keyframe_url = r.url; s.keyframe_mtime = r.mtime;
+    renderShots();
+    const img = $('#kf'); img.src = bust(r.url, r.mtime); img.style.display = 'block';
+    $('#kfmeta').textContent = `${r.model} · $${(r.cost||0).toFixed(4)}`;
+    toast('Keyframe regenerated — render the film to use it', 'ok');
+  } catch (e) { toast('Keyframe failed: ' + esc(e.message), 'err'); }
+  finally { if (btn) btn.disabled = false; }
+}
+
+function previewKeyframe() {
+  const s = S.shots[current];
+  if (s.keyframe_url) window.open(bust(s.keyframe_url, s.keyframe_mtime), '_blank');
+}
+
+async function regenPanel(kind, index) {
+  try {
+    await save(true);
+    toast('Generating panel…');
+    const r = await api('/api/regen/panel', {shot_id: S.shots[current].id, kind, index});
+    if (!r.ok) throw new Error(r.error);
+    toast('Panel regenerated (' + r.model + '). Render to use it.', 'ok');
+    renderEditor();
+  } catch (e) { toast('Panel failed: ' + esc(e.message), 'err'); }
+}
+
+async function regenNarration() {
+  try {
+    await save(true);
+    toast('Recording narration…');
+    const r = await api('/api/regen/narration', {shot_id: S.shots[current].id});
+    if (!r.ok) throw new Error(r.error);
+    const s = S.shots[current];
+    s.narration_seconds = r.seconds;
+    s.narration_url = r.url;
+    renderShots(); renderEditor();
+    toast(`Narration regenerated (${r.seconds?.toFixed(2)}s)`, 'ok');
+  } catch (e) { toast('Narration failed: ' + esc(e.message), 'err'); }
+}
+
+async function startRender() {
+  try {
+    const r = await api('/api/render', {});
+    if (!r.ok) throw new Error(r.error);
+    $('#renderbox').style.display = 'block';
+    toast('Render started — picture is deterministic; ~5–7 min', 'ok');
+    pollRender(true);
+  } catch (e) { toast('Render failed: ' + esc(e.message), 'err'); }
+}
+
+let pollTimer = null;
+async function pollRender(force=false) {
+  const st = await api('/api/render/status').catch(() => null);
+  if (!st) return;
+  const running = st.running;
+  $('#renderBtn').disabled = running;
+  if (running || force || st.log?.length) {
+    $('#renderbox').style.display = 'block';
+    $('#rstate').textContent = running ? `running since ${st.started}` : `exited ${st.exit}`;
+    $('#rlog').textContent = (st.log || []).slice(-40).join('\n');
+  }
+  clearTimeout(pollTimer);
+  pollTimer = setTimeout(() => pollRender(false), running ? 2000 : 8000);
+}
+
+$('#saveBtn').onclick = () => save().catch(e => toast('Save failed: ' + esc(e.message), 'err'));
+$('#renderBtn').onclick = startRender;
+window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+
+load(false).catch(e => { $('#editor').innerHTML = '<p class="meta">Editor failed to load: ' + esc(e.message) + '</p>'; });
+</script>
+</body>
+</html>

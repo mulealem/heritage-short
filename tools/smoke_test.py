@@ -47,21 +47,11 @@ def check_gemini_tts():
 
 
 def check_cloudflare_flux():
-    acct = common.env_key("CF_ACCOUNT_ID")
-    token = common.env_key("CF_API_TOKEN")
-    model = common.env_key("CF_FLUX_MODEL") or "@cf/black-forest-labs/flux-schnell"
-    url = "https://api.cloudflare.com/client/v4/accounts/%s/ai/run/%s" % (acct, model)
-    body, status, ms = net.http_json(url, {"prompt": "a red apple on a wooden table",
-                                           "steps": 4, "width": 512, "height": 512},
-                                     headers={"Authorization": "Bearer " + token},
-                                     timeout=300)
-    img = body.get("result", {}).get("image")
-    if not img:
-        raise RuntimeError("no image: %s" % str(body)[:200])
-    n = len(base64.b64decode(img))
+    from pipeline.keyframes import cf_flux  # exercise the exact production path
+    png, model, ms = cf_flux("a red apple on a wooden table", 512, 512, seed=0)
     common.log_call(stage="smoke", model=model, latency_ms=ms,
-                    params={"kind": "image", "bytes": n}, status="ok")
-    print("cloudflare flux: OK  (%d ms, %d bytes png)" % (ms, n))
+                    params={"kind": "image", "bytes": len(png)}, status="ok")
+    print("cloudflare flux: OK  (%d ms, %d bytes image)" % (ms, len(png)))
 
 
 CHECKS = {

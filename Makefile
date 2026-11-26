@@ -1,21 +1,53 @@
 PY = python3
 
-.PHONY: film mock validate smoke narration keyframes shots music assemble serve clean
+.PHONY: short film comic cast panels score editor prompts verify preflight validate narration keyframes shots music assemble serve clean
 
-# The one documented command: runs the whole pipeline end to end.
+# THE ONE COMMAND: storyboard.json -> outputs/film_9x16.mp4 + outputs/film_16x9.mp4
+#   validate, narration, cast, keyframes, panels, comic build, score, render 9:16, render 16:9
+# Every stage validates the contract, works from the content-hash cache and
+# stops with instructions if something it needs is missing. A clone that keeps
+# outputs/ needs no API keys: keys are only asked for on a real cache miss.
+short:
+	$(PY) -m pipeline.short
+
+# The video-clip route (Wan 2.2 on Kaggle -> real moving shots): stops at
+# `shots` until the Kaggle clips are in outputs/shots/. The submitted film was
+# made with `make short` (motion comic), not this target.
 film:
 	$(PY) -m pipeline.run_all
 
-# Full pipeline in offline mock mode (no API keys, no GPU): placeholder
-# narration, keyframes and score so you can inspect the finished edit shape.
-mock:
-	FORCE_MOCK=1 $(PY) -m pipeline.run_all
+# Motion-comic render (fframes, CPU): panels + balloons + kinetic captions.
+# Written by pipeline/comic.py; ~5 min CPU for the whole film.
+comic:
+	$(PY) -m pipeline.comic all
+
+# Comic art: cast reference portraits, then extra insert panels.
+cast:
+	$(PY) tools/comic_cast.py
+
+panels:
+	$(PY) tools/comic_panels.py
+
+# Local web editor: edit prompts/narration, regenerate one asset, render.
+# Binds 127.0.0.1:8765 — put a tunnel in front if you need remote access.
+editor:
+	$(PY) tools/editor_server.py --host 127.0.0.1 --port 8765
+
+# Export every prompt + line of the film to PROMPTS.md.
+prompts:
+	$(PY) tools/export_prompts.py
+
+# Check the finished films: streams, specs, 60-90 s, loudness, subtitles.
+verify:
+	$(PY) tools/verify_film.py outputs/film_9x16.mp4 outputs/film_16x9.mp4
+
+# Real one-call check per provider (Gemini text, Gemini TTS, CF FLUX).
+# Run this first whenever .env changes.
+preflight:
+	$(PY) tools/smoke_test.py
 
 validate:
 	$(PY) -m pipeline.validate_sb storyboard.json
-
-smoke:
-	$(PY) tools/smoke_test.py
 
 narration:
 	$(PY) -m pipeline.narration
@@ -26,8 +58,15 @@ keyframes:
 shots:
 	$(PY) -m pipeline.shots
 
+# Music-model route: needs a chosen score (an ACE-Step candidate copied to
+# outputs/music/score_final.wav) and refuses to guess between candidates.
 music:
 	$(PY) -m pipeline.music
+
+# The score slot as the one command uses it: keep a chosen score, otherwise
+# build the deterministic qenet bed; then log it and refresh the manifest.
+score:
+	$(PY) -m pipeline.score
 
 assemble:
 	$(PY) -m pipeline.assemble
@@ -38,5 +77,7 @@ assemble:
 serve:
 	$(PY) -m http.server 8123 --bind 127.0.0.1 --directory docs
 
+# Remove what is rebuilt on every run (render intermediates and the media
+# copies). The cached model outputs in outputs/ stay: they are the evidence.
 clean:
-	rm -rf outputs
+	rm -rf outputs/comic comic/media/panel_* comic/media/ins_* comic/media/re_* comic/film.json

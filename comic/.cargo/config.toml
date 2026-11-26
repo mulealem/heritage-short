@@ -1,0 +1,2 @@
+[build]
+rustflags = ["-L", "native=/opt/x264-163/lib"]

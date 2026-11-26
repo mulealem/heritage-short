@@ -1,9 +1,9 @@
-"""Stage: script — draft storyboard.json with Gemini (optional), else print guidance.
+"""Stage: script — draft storyboard.json with Gemini from story_brief.md.
 
-The storyboard is the human-authored contract, so this stage assists rather than
-replaces: it reads story_brief.md (your notes about the story, audience, intent)
-and proposes a storyboard that must still validate against the schema and be
-reviewed by you before anything is generated.
+The storyboard is the human-authored contract, so this stage assists rather
+than replaces: it reads story_brief.md (your notes about the story, audience,
+intent) and proposes a storyboard that must still validate against the schema
+and be reviewed by you before anything is generated. Needs GEMINI_API_KEY.
 
 Usage: python3 -m pipeline.script [story_brief.md]
 """
@@ -53,11 +53,9 @@ def main():
                  "language), then rerun: python3 -m pipeline.script story_brief.md\n"
                  "Or hand-write storyboard.json directly — it is just JSON.")
     brief_text = brief_path.read_text(encoding="utf-8")
-
-    if not (common.has_key("GEMINI_API_KEY") and not common.force_mock()):
-        print("No GEMINI_API_KEY — draft storyboard.json by hand against "
-              "schema/storyboard.schema.json, then: make validate")
-        return
+    common.require_key("GEMINI_API_KEY",
+                       "get one at https://aistudio.google.com/apikey (free tier); "
+                       "or hand-write storyboard.json against schema/storyboard.schema.json")
 
     t0 = time.time()
     sb, model, ms = draft_with_gemini(brief_text)

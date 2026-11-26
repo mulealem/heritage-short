@@ -73,8 +73,7 @@
   <p><code>a-video-generator</code> · one contract, six stages, swappable models · zero-install (Python stdlib + FFmpeg)</p>
   <div class="legend">
     <span class="tag t-real">hosted API</span><span class="tag t-gpu">GPU on Kaggle (free)</span>
-    <span class="tag t-local">local · FFmpeg</span><span class="tag t-mock">offline fallback</span>
-    <span class="tag t-file">file contract</span>
+    <span class="tag t-local">local · FFmpeg</span><span class="tag t-file">file contract</span>
   </div>
 </header>
 
@@ -83,7 +82,7 @@
   <div class="rail">
     <div class="card">
       <h3>.env <span class="tag t-local">secrets</span></h3>
-      <p>GEMINI_API_KEY, CF_ACCOUNT_ID, CF_API_TOKEN. Gitignored; loaded by <code>pipeline/common.py</code>. Missing keys ⇒ that stage runs in mock mode.</p>
+      <p>GEMINI_API_KEY, CF_ACCOUNT_ID, CF_API_TOKEN. Gitignored; loaded by <code>pipeline/common.py</code>. Missing key ⇒ the stage stops with setup instructions — the pipeline is real-only.</p>
     </div>
     <div class="opsline"></div>
     <div class="card">
@@ -93,7 +92,7 @@
     <div class="opsline"></div>
     <div class="card">
       <h3>retries</h3>
-      <p><code>pipeline/net.py</code>: 3 attempts, exponential backoff on 429/5xx/timeouts. Errors logged, then the stage falls back — the pipeline never dead-ends.</p>
+      <p><code>pipeline/net.py</code>: 3 attempts, exponential backoff on 429/5xx/timeouts. After that the error is logged and the stage exits with instructions — finished work stays cached, so a rerun never pays twice.</p>
     </div>
   </div>
 
@@ -105,8 +104,8 @@
     </div>
     <div class="arrow-down">▼</div>
     <div class="card">
-      <h3>① script — <code>pipeline/script.py</code> <span class="tag t-real">Gemini Flash</span><span class="tag t-mock">guidance w/o key</span></h3>
-      <p>optional drafting assist; output must pass schema validation and your review</p>
+      <h3>① script — <code>pipeline/script.py</code> <span class="tag t-real">Gemini Flash</span></h3>
+      <p>optional drafting assist (needs GEMINI_API_KEY); output must pass schema validation and your review</p>
     </div>
     <div class="arrow-down">▼</div>
     <div class="card contract">
@@ -123,7 +122,7 @@
         <p><span class="tag t-real">Gemini TTS · 130+ langs</span></p>
         <ul>
           <li>one WAV per shot, style steered ("calm, warm")</li>
-          <li>fallback: <span class="tag t-mock">tone @ exact duration</span></li>
+          <li>real only — a failed call stops the stage</li>
           <li>cache: sha256(text·lang·voice)</li>
         </ul>
         <p>→ <code>outputs/narration/&lt;id&gt;.wav</code> <span class="tag t-file"></span></p>
@@ -133,7 +132,7 @@
         <p><span class="tag t-real">FLUX.1 schnell · Cloudflare</span></p>
         <ul>
           <li>character/style sheet FIRST, then shots conditioned on it</li>
-          <li>fallback: <span class="tag t-mock">placeholder PNG</span></li>
+          <li>real only — a failed call stops the stage</li>
           <li>cache: sha256(prompt·size·seed)</li>
         </ul>
         <p>→ <code>outputs/keyframes/&lt;id&gt;.png</code> <span class="tag t-file"></span></p>
@@ -142,9 +141,9 @@
         <h3>④ moving shots <small>pipeline/shots.py</small></h3>
         <p><span class="tag t-gpu">Wan 2.2 TI2V-5B · Kaggle T4</span></p>
         <ul>
-          <li>emits manifest → Kaggle worker (save-as-you-go)</li>
-          <li>fallback: <span class="tag t-local">Ken Burns pan/zoom</span></li>
-          <li>mode decision recorded in <code>plan.json</code></li>
+          <li>emits manifest → Kaggle worker (save-as-you-go, resume-safe)</li>
+          <li>requires a real clip for EVERY shot — missing ⇒ stops with steps</li>
+          <li>clip list recorded in <code>plan.json</code></li>
         </ul>
         <p>→ <code>outputs/shots/&lt;id&gt;.mp4</code> <span class="tag t-file"></span></p>
       </div>
@@ -153,8 +152,8 @@
         <p><span class="tag t-gpu">ACE-Step 1.5 · Kaggle</span></p>
         <ul>
           <li>caption + bpm + key → 3 candidates, you audition &amp; pick</li>
-          <li>fallback: <span class="tag t-mock">ambient pad</span></li>
-          <li>radio-cut rule: placeholder score is a valid cut</li>
+          <li>real only — no score ⇒ stops with the worker steps</li>
+          <li>your pick is the subjective call: <code>score_final.wav</code></li>
         </ul>
         <p>→ <code>outputs/music/score_final.wav</code> <span class="tag t-file"></span></p>
       </div>
@@ -165,7 +164,7 @@
       <h3>⑥ assemble — <code>pipeline/assemble.py</code> <span class="tag t-local">FFmpeg only · deterministic</span></h3>
       <div class="steps">
         <span class="step"><b>timeline</b> from measured narration</span>→
-        <span class="step"><b>segments</b> clip or Ken Burns, per ratio</span>→
+        <span class="step"><b>segments</b> real clips, per ratio</span>→
         <span class="step"><b>tpad</b> last-frame hold (any clip length)</span>→
         <span class="step"><b>end card</b> "Made with AI"</span>→
         <span class="step"><b>concat</b></span>→
@@ -178,6 +177,21 @@
         <div class="card film">vertical<span class="big mono">outputs/film_9x16.mp4</span><p>1080×1920 · 24 fps</p></div>
         <div class="card film">horizontal<span class="big mono">outputs/film_16x9.mp4</span><p>1920×1080 · 24 fps</p></div>
       </div>
+    </div>
+
+    <div class="arrow-down">▼&nbsp;&nbsp;or, without any video model: the comic lane</div>
+    <div class="card" style="border-color:var(--keys)">
+      <h3>⑦ comic — <code>pipeline/comic.py</code> + <code>comic/</code> <span class="tag t-local">fframes · Rust · CPU</span></h3>
+      <div class="steps">
+        <span class="step"><b>panels</b> + inserts (image-01)</span>→
+        <span class="step"><b>film.json</b> from measured narration</span>→
+        <span class="step"><b>camera</b> push/pan/shake</span>→
+        <span class="step"><b>balloons</b> spring pop</span>→
+        <span class="step"><b>SFX</b> starbursts</span>→
+        <span class="step"><b>captions</b> word-by-word</span>→
+        <span class="step"><b>mux</b> + soft subtitles</span>
+      </div>
+      <p style="color:var(--dim)">Deterministic, no GPU, no video API: ~5 CPU minutes for the whole film. Same storyboard, narration and score as the clip route.</p>
     </div>
   </div>
 
@@ -203,8 +217,9 @@
   </div>
 </div>
 
-<div class="note"><b>One command:</b> <code>make film</code> runs validate → narration → keyframes → shots → music → assemble.
-&nbsp;<code>make mock</code> runs it fully offline. Swap a shot by editing <code>storyboard.json</code> and re-running — watch <code>runs.jsonl</code>.</div>
+<div class="note"><b>One command:</b> <code>make film</code> runs validate → narration → keyframes → shots → music → assemble (real only — Kaggle stages stop with instructions until their workers have run; rerun after each round-trip, cache hits are free).
+&nbsp;<code>make comic</code> renders the motion-comic lane instead of video clips.
+&nbsp;<code>make preflight</code> makes one real call per provider. Swap a shot by editing <code>storyboard.json</code> and re-running — watch <code>runs.jsonl</code>.</div>
 
 <footer>Generated from the repository's real stage code · see ARCHITECTURE.md for prose · this page: docs/architecture.html</footer>
 </div>

@@ -5,34 +5,67 @@
 GATE: if a real person appears or is voiced without a consent record here,
 the film scores zero.
 
-- TODO: For each real person shown or voiced: who, what was agreed
-  (face/voice/words), how consent was recorded (voice note, message, signed
-  line), and the date. BEFORE anything of them is generated.
-- Current status: the draft storyboard uses a fictional grandmother ("Emaye")
-  and a fictional child — no real likeness or voice yet. If the final film
-  keeps fictional characters, record that decision here and say who decided it.
+- Current status: **the cast is fictional.** Aleqa Gebre Hanna is a
+  nineteenth-century folk-tale figure and the Gatekeeper is an invented
+  character; both portraits are synthetic (MiniMax image-01) from no real
+  person's likeness. The narration is synthetic TTS reading the narrator's own
+  words, not a recording of a family member.
+- Family story: the earlier draft ("What Are You Seeing?") was built from a
+  real family memory. It was replaced by this folk tale before any film was
+  published, so no real likeness or voice is used in the finished piece.
+  The family had approved that earlier draft's text; the decision to move to
+  the folk tale was the narrator's.
+- If a real person is ever added: record who, what was agreed (face / voice /
+  words), how consent was recorded, and the date — before generating.
 
 ## Model licences
 
-| Model | Licence | Output terms |
-|---|---|---|
-| Gemini Flash TTS | Google terms of service | check current terms |
-| FLUX.1 schnell | Apache 2.0 | usable commercially |
-| Wan 2.2 TI2V-5B | Apache 2.0 | usable commercially |
-| ACE-Step 1.5 | MIT; trained on licensed data | outputs usable commercially |
-| FFmpeg | LGPL/GPL | n/a (tool) |
+| Model / asset | Used for | Licence | Output terms |
+|---|---|---|---|
+| Gemini 3.8 Flash TTS | narration (10 lines, voice Kore) | Google API terms | **TO CONFIRM before publishing** (generative AI output terms) |
+| MiniMax image-01 | 11 keyframes, 16 panels, 2 cast portraits | MiniMax platform terms (M plan) | **TO CONFIRM before publishing** |
+| FLUX-2 klein 4B (Cloudflare) | draft keyframes, comparison only | Apache 2.0 (4B weights) via Workers AI | per Workers AI terms |
+| Wan 2.2 TI2V-5B | not used in this film | Apache 2.0 | usable commercially |
+| ACE-Step 1.5 | not used in this film | MIT | outputs usable commercially |
+| qenet bed | the score | original: synthesised by `tools/make_qenet_bed.py` in this repository | ours; no third-party rights |
+| fframes 1.4.2-rc.11 | renderer (tool) | MIT (crate manifest) | n/a |
+| FFmpeg, x264 build 163 | mix, mux, encode (tools) | LGPL / GPL | n/a — linked into the renderer binary, not into the film |
+| DM Sans, Bangers, Noto Sans Ethiopic | captions, balloons, Amharic text | SIL Open Font Licence 1.1 | embeddable |
 
-TODO: verify each against its current card the day you use it, and note the date.
+Tool and font licences were read from the crate manifests and font files on
+this machine (Nov 2026). The two paid/API model terms are the owner's to
+confirm on the day of publishing; nothing else in the film comes from a
+third party.
 
 ## Labelling plan
 
-- The film ends with a visible "Made with AI" end card (in the storyboard).
+- The film ends with a visible "made with AI" end card (in the storyboard):
+  title, the proverb in Amharic and English, and the line "a folk tale of
+  Aleqa Gebre Hanna — made with AI", in both aspect ratios.
+- The narration and the whole picture are synthetic; the story is a
+  traditional folk tale, retold.
+- **What the source files carry.** The MiniMax images embed an AIGC label in
+  their EXIF (`ContentProducer: MiniMax`, found in the files). They are kept
+  unmodified in `outputs/`.
+- **What the films carry — stated plainly.** The MP4s are a re-render: the
+  panels are redrawn by the comic renderer and the audio re-mixed, so no
+  provider provenance metadata survives into them. The mux therefore writes its
+  own disclosure into the container: `title` and a `comment` field reading
+  "AI-generated film. Synthetic images (MiniMax image-01), synthetic narration
+  (Gemini TTS), a score synthesised by code…" (`ffprobe` shows it). The comic
+  camera moves crop a few percent of each panel edge; no blur or patch is
+  applied to any watermark.
 - Platform disclosure (YouTube / TikTok / Meta "AI content" label) switched ON
   when posting — TODO: platform + date + link.
-- Watermarks and provenance metadata (SynthID, C2PA) left intact wherever a
-  provider adds them.
 
 ## Private data
 
-TODO: what family details were kept out of free endpoints that may train on
-inputs, and what was changed/anonymised in the storyboard itself.
+- Prompts sent to hosted models contain only the storyboard text: a public
+  folk tale, no addresses, no family names, no private dates.
+- `.env` (API keys) is gitignored and never logged; `runs.jsonl` records
+  prompts, seeds, latencies and costs, not credentials. The working tree and
+  the git history were scanned for every key value before the repository was
+  published (none found).
+- The earlier family-memory storyboard remains in git history (`storyboard.backup.json`
+  is local-only); nothing private was sent to a free endpoint that trains on
+  inputs beyond storyboard prompts for that draft.

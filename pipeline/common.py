@@ -22,12 +22,19 @@ RUN_ID = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
 
 # Approximate list prices (USD) for the "list-price equivalent" in COSTS.md.
 # These are estimates, not quotes; update them when you check current pricing.
+# flux-klein-4b-per-image: Workers AI tiles pricing (~3.5 output 512x512 tiles
+# at 720x1280, Nov 2026 price sheet) — about $0.0012 per portrait image.
 LIST_PRICES = {
     "gemini-tts-per-1k-chars": 0.010,
     "gemini-text-per-1k-chars": 0.001,
-    "flux-schnell-per-image": 0.0006,
+    "flux-klein-4b-per-image": 0.0012,
+    "cloudflare-flux-2-klein-4b-per-image": 0.0012,
+    # nano banana 2K, approximate list price per image (paid tier)
+    "gemini-nano-banana-2.1-per-2k-image": 0.03,
     "wan22-per-5s-720p-clip": 0.50,
-    "ace-step-per-track": 0.30,
+        "minimax-h3-per-second": 0.08,
+    "minimax-image-01-per-image": 0.0035,
+"ace-step-per-track": 0.30,
 }
 
 
@@ -61,8 +68,10 @@ def has_key(name):
     return bool(env_key(name))
 
 
-def force_mock():
-    return os.environ.get("FORCE_MOCK", "") == "1"
+def require_key(name, setup_hint):
+    """Real-only pipeline: a missing key is a hard stop with instructions."""
+    if not has_key(name):
+        sys.exit("missing %s in .env — %s" % (name, setup_hint))
 
 
 def log_call(stage, model, params=None, latency_ms=None, status="ok",
@@ -94,10 +103,37 @@ def hash_key(*objs):
     return hashlib.sha256(blob.encode("utf-8")).hexdigest()[:16]
 
 
+def image_provider():
+    """Which image model draws keyframes and panels (minimax | cloudflare)."""
+    return env_key("IMAGE_PROVIDER") or "minimax"
+
+
+def image_cache_model(provider=None):
+    """The model token used in image cache keys.
+
+    Kept in one place: the stage, the editor and the prompt ledger must hash the
+    exact same string, or a freshly generated image falsely reads as stale. It
+    depends only on the provider, not on unrelated settings, so a clean clone
+    with no `.env` still recognises the committed cache.
+    """
+    provider = provider or image_provider()
+    if provider == "minimax":
+        return env_key("MINIMAX_IMAGE_MODEL") or "image-01"
+    return env_key("CF_FLUX_MODEL") or "flux-2-klein-4b"
+
+
 def load_storyboard():
+    """The contract. Every stage goes through here, so every run validates first."""
     if not STORYBOARD_PATH.exists():
         sys.exit("storyboard.json not found at %s" % STORYBOARD_PATH)
-    return json.loads(STORYBOARD_PATH.read_text(encoding="utf-8"))
+    sb = json.loads(STORYBOARD_PATH.read_text(encoding="utf-8"))
+    from pipeline.jsonschema_lite import validate
+    errors = validate(sb, json.loads(SCHEMA_PATH.read_text(encoding="utf-8")))
+    if errors:
+        sys.exit("storyboard.json does not match %s (%d error%s):\n  %s"
+                 % (SCHEMA_PATH.name, len(errors), "" if len(errors) == 1 else "s",
+                    "\n  ".join(str(e) for e in errors[:10])))
+    return sb
 
 
 def film_duration(sb):
@@ -157,6 +193,11 @@ def probe_duration(path):
         return float(out.stdout.strip())
     except ValueError:
         return None
+
+
+def image_ext(data):
+    """File extension for image bytes: .jpg for JPEG, .png otherwise."""
+    return (".jpg", "jpeg") if data[:2] == b"\xff\xd8" else (".png", "png")
 
 
 def est_cost(kind, units):

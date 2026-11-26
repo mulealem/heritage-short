@@ -1,19 +1,18 @@
-"""Stage: shots — moving shots via Wan 2.2 on Kaggle, with local Ken Burns fallback.
+"""Stage: shots — real Wan 2.2 clips only (generated on Kaggle, no GPU here).
 
-This stage does not call a model from this machine (no GPU here). It:
+This stage does not call a model from this machine. It:
   1. writes kaggle/manifest_shots.json for the Kaggle worker,
-  2. checks which clips exist in outputs/shots/<id>.mp4,
-  3. writes outputs/shots/plan.json telling assemble which shots use real clips
-     and which get the Ken Burns pan-and-zoom fallback (per the brief, a
-     narrated, scored, subtitled sequence of stills is still a film).
+  2. requires a valid outputs/shots/<id>.mp4 for EVERY shot — a missing or
+     undecodable clip stops the stage with instructions (no Ken Burns
+     fallback exists any more),
+  3. writes outputs/shots/plan.json (all shots are mode "clip").
 
-Workflow: run this -> upload outputs/keyframes + manifest to Kaggle (see
-kaggle/README.md) -> run the worker notebook -> drop resulting mp4s into
+Workflow: run this -> upload outputs/keyframes + the manifest to Kaggle (see
+kaggle/README.md) -> run the worker notebook -> drop the resulting mp4s into
 outputs/shots/ -> rerun this stage.
 """
 import json
 import sys
-from pathlib import Path
 
 from pipeline import common
 
@@ -23,7 +22,7 @@ def main():
     shots_dir = common.stage_dir("shots")
 
     manifest = {
-        "model": "Wan-AI/Wan2.2-TI2V-5B",
+        "model": "Wan-AI/Wan2.2-TI2V-5B-Diffusers",
         "fps": 24,
         "resolution": 720,
         "shots": [
@@ -41,32 +40,33 @@ def main():
     mf_path.parent.mkdir(exist_ok=True)
     mf_path.write_text(json.dumps(manifest, indent=1))
 
+    missing = []
     plan = {}
-    have_clips = 0
     for s in sb["shots"]:
         clip = shots_dir / ("%s.mp4" % s["id"])
-        if clip.exists() and common.probe_duration(clip):
-            d = common.probe_duration(clip)
-            plan[s["id"]] = {"mode": "clip", "path": str(clip.relative_to(common.ROOT)),
-                             "duration_s": d}
-            have_clips += 1
-            common.log_call(stage="shots", model="wan2.2-ti2v-5b", seed=s.get("seed"),
-                            params={"shot": s["id"], "duration_s": d},
-                            status="cache" if s.get("_logged") else "ok",
-                            output=str(clip), note="clip present")
-        else:
-            plan[s["id"]] = {"mode": "kenburns", "path": "outputs/keyframes/%s.png" % s["id"],
-                             "duration_s": s["duration_s"]}
-            common.log_call(stage="shots", model="kenburns-fallback",
-                            params={"shot": s["id"], "duration_s": s["duration_s"]},
-                            status="skip", note="no clip yet; Ken Burns fallback")
+        d = common.probe_duration(clip) if clip.exists() else None
+        if not d:
+            missing.append(s["id"])
+            continue
+        plan[s["id"]] = {"mode": "clip", "path": str(clip.relative_to(common.ROOT)),
+                         "duration_s": d}
+        common.log_call(stage="shots", model="wan2.2-ti2v-5b", seed=s.get("seed"),
+                        params={"shot": s["id"], "duration_s": d},
+                        status="ok", output=str(clip), note="clip present")
     (shots_dir / "plan.json").write_text(json.dumps(plan, indent=1))
 
-    print("shots: %d/%d clips present; %d will use Ken Burns fallback"
-          % (have_clips, len(sb["shots"]), len(sb["shots"]) - have_clips))
     print("kaggle manifest written -> %s" % mf_path)
-    if have_clips < len(sb["shots"]):
-        print("to generate real clips: see kaggle/README.md (Wan 2.2 on a free T4)")
+    if missing:
+        sys.exit(
+            "shots: %d/%d clips missing or unreadable: %s\n"
+            "the pipeline is real-only — no still-image fallback exists.\n"
+            "generate them on Kaggle: kaggle/README.md (Wan 2.2 TI2V-5B, free T4;\n"
+            "upload the manifest + outputs/keyframes/, run the worker, drop the\n"
+            "mp4s into outputs/shots/ named <shot_id>.mp4) or import clips from\n"
+            "any generator: python3 tools/import_clips.py <folder> --model <name>"
+            % (len(sb["shots"]) - len(missing), len(sb["shots"]), ", ".join(missing)))
+    print("shots: %d/%d real clips present -> %s"
+          % (len(plan), len(sb["shots"]), shots_dir / "plan.json"))
 
 
 if __name__ == "__main__":

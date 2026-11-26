@@ -2,13 +2,17 @@
 
 Pipeline (FFmpeg only, deterministic):
   1. timeline from storyboard durations vs measured narration durations
-  2. per-shot video segments per aspect ratio (real clip if present, else
-     Ken Burns pan-and-zoom over the keyframe — the brief's fallback)
+  2. per-shot video segments per aspect ratio from the real clips in
+     outputs/shots/<id>.mp4 (per outputs/shots/plan.json)
   3. end card segment ("Made with AI")
   4. concat -> picture.mp4
-  5. audio master: narration placed on the timeline, music ducked under the
-     voice (sidechaincompress), loudness normalised to -14 LUFS / -1 dBTP
+  5. audio master: narration placed on the timeline, the chosen score ducked
+     under the voice (sidechaincompress), loudness normalised to
+     -14 LUFS / -1 dBTP
   6. burn in subtitles, mux -> outputs/film_9x16.mp4 and outputs/film_16x9.mp4
+
+Real only: requires narration, a plan with a real clip for every shot, and
+outputs/music/score_final.wav. Missing inputs stop the stage with instructions.
 
 Subtitles are English (narration.en when narration is in another language).
 """
@@ -22,6 +26,8 @@ from pathlib import Path
 from pipeline import common
 
 WORK = None  # outputs/assemble, set in main
+NARR_DIR = None  # where build_narration_track reads the lines; defaults to the
+                 # raw recordings, the comic route points it at the fitted edit
 FPS = 24
 SUB_FONT_SIZE = 10          # ASS units (PlayRes 288): ~3.5% of frame height
 SUB_MARGIN_V_VERT = 34      # keeps text inside vertical safe area
@@ -37,13 +43,25 @@ def srt_ts(t):
     return "%02d:%02d:%02d,%03d" % (h, m, s, ms)
 
 
+def beat_pad(sb):
+    """Silence that follows each line before the next beat (storyboard contract)."""
+    return float((sb["meta"].get("timing") or {}).get("beat_pad_seconds") or 0.7)
+
+
 def build_timeline(sb, durations):
-    """Returns (shots_with_timing, total). Timing = narration placement."""
+    """Returns (shots_with_timing, total). Timing = narration placement.
+
+    A beat lasts its planned `duration_s`, or the narration plus
+    `timing.beat_pad_seconds` if that is longer — so a planned duration above
+    the line is a held beat (the pause after the deadpan, the laughing crowd
+    after the punchline).
+    """
+    pad = beat_pad(sb)
     t = 0.0
     timed = []
     for s in sb["shots"]:
         nd = durations.get(s["id"]) or s["duration_s"]
-        dur = max(s["duration_s"], nd + 0.7)
+        dur = max(s["duration_s"], nd + pad)
         timed.append({
             "shot": s, "start": t, "dur": round(dur, 3),
             "narr_start": round(t + NARR_OFFSET, 3), "narr_dur": nd,
@@ -72,24 +90,6 @@ def scale_crop(w, h):
             "crop=%d:%d" % (w, h, w, h))
 
 
-def kenburns_chain(idx, dur, w, h):
-    frames = max(int(dur * FPS), 2)
-    up_w, up_h = w * 2, h * 2
-    pre = "scale=%d:%d:force_original_aspect_ratio=increase,crop=%d:%d" % (up_w, up_h, up_w, up_h)
-    cx = "iw/2-(iw/zoom)/2"
-    cy = "ih/2-(ih/zoom)/2"
-    variants = [
-        ("1+0.10*on/%d" % frames, cx, cy),
-        ("1.10-0.10*on/%d" % frames, cx, cy),
-        ("1.06", "(iw-iw/zoom)*on/%d" % frames, cy),
-        ("1.06", "(iw-iw/zoom)*(1-on/%d)" % frames, cy),
-    ]
-    z, x, y = variants[idx % len(variants)]
-    zp = ("zoompan=z='%s':x='%s':y='%s':d=%d:s=%dx%d:fps=%d"
-          % (z, x, y, frames, w, h, FPS))
-    return "%s,%s,fade=t=in:st=0:d=0.12" % (pre, zp)
-
-
 def clip_chain(dur, w, h):
     # tpad holds the last frame if the clip is shorter than the shot needs,
     # so clips from ANY generator (5s Veo, 4s Wan, 10s Hunyuan) all work.
@@ -99,26 +99,23 @@ def clip_chain(dur, w, h):
 
 def render_segment(idx, item, w, h, work):
     """Render one video-only segment with exact frame count."""
-    s = item["shot"]
     plan = item.get("plan", {})
+    if plan.get("mode") != "clip":
+        sys.exit("shot %s has no real clip in outputs/shots/plan.json (mode=%r) — "
+                 "run: make shots (it will point you at the Kaggle worker)"
+                 % (item["shot"]["id"], plan.get("mode")))
     out = work / ("seg_%02d.mp4" % idx)
     frames = int(round(item["dur"] * FPS))
-    if plan.get("mode") == "clip":
-        src = common.ROOT / plan["path"]
-        head = 0.25  # trim the weak first half-second, per the brief
-        args = ["-ss", head, "-i", src, "-frames:v", frames,
-                "-vf", clip_chain(item["dur"], w, h)]
-        note = "clip %s" % src.name
-    else:
-        src = common.ROOT / "outputs" / "keyframes" / ("%s.png" % s["id"])
-        if not src.exists():
-            sys.exit("missing keyframe %s — run: make keyframes" % src)
-        args = ["-i", src, "-vf", kenburns_chain(idx, item["dur"], w, h),
-                "-frames:v", frames]
-        note = "kenburns %s" % src.name
+    src = common.ROOT / plan["path"]
+    if not src.exists():
+        sys.exit("clip %s listed in plan.json is missing on disk — rerun: make shots" % src)
+    head = 0.25  # trim the weak first half-second, per the brief
+    args = ["-ss", head, "-i", src, "-frames:v", frames,
+            "-vf", clip_chain(item["dur"], w, h)]
     args += ["-r", FPS, "-pix_fmt", "yuv420p", "-c:v", "libx264",
              "-preset", "medium", "-crf", "20", "-an", str(out)]
-    common.run_ffmpeg(args, stage="assemble", note="%s -> seg_%02d" % (note, idx), cwd=WORK)
+    common.run_ffmpeg(args, stage="assemble", note="clip %s -> seg_%02d" % (src.name, idx),
+                      cwd=WORK)
     return out
 
 
@@ -166,7 +163,7 @@ def build_narration_track(timed, total):
     for i, item in enumerate(timed):
         gap = max(item["narr_start"] - cursor, 0.02)
         parts.append("anullsrc=r=24000:cl=mono,atrim=0:%.3f,asetpts=PTS-STARTPTS[g%d]" % (gap, i))
-        narr = common.ROOT / "outputs" / "narration" / ("%s.wav" % item["shot"]["id"])
+        narr = (NARR_DIR or common.OUT / "narration") / ("%s.wav" % item["shot"]["id"])
         inputs += ["-i", narr]
         parts.append("[%d]aformat=sample_rates=24000:channel_layouts=mono[n%d]" % (i, i))
         cursor = item["narr_start"] + item["narr_dur"]
@@ -181,33 +178,30 @@ def build_narration_track(timed, total):
 
 def build_audio_master(timed, total, out_wav):
     inputs, vchain = build_narration_track(timed, total)
-    music_final = common.ROOT / "outputs" / "music" / "score_final.wav"
-    music_ph = common.ROOT / "outputs" / "music" / "score_placeholder.wav"
-    if music_final.exists():
-        music_src, mtag = music_final, "chosen score"
-    elif music_ph.exists():
-        music_src, mtag = music_ph, "PLACEHOLDER pad"
-    else:
-        sys.exit("no music in outputs/music/ — run: make music")
+    music_src = common.ROOT / "outputs" / "music" / "score_final.wav"
+    if not (music_src.exists() and common.probe_duration(music_src)):
+        sys.exit("no chosen score at outputs/music/score_final.wav — run: make music "
+                 "(it points you at the Kaggle ACE-Step worker)")
 
     fmt = "aformat=sample_fmts=flt:sample_rates=48000:channel_layouts=stereo"
+    music_lufs = common.env_key("MUSIC_LUFS") or "-24"
     fc = vchain + (
         ";[%d]%s,atrim=0:%.3f,"
-        "loudnorm=I=-16:TP=-1.5:LRA=11,"
+        "loudnorm=I=%s:TP=-1.5:LRA=11,"
         "afade=t=out:st=%.2f:d=2.5,%s[mus0];"
         "[voice]%s,apad=whole_dur=%.3f,%s,asplit=2[vkey][vmix];"
         "[mus0][vkey]sidechaincompress=threshold=0.02:ratio=6:attack=300:release=1500[musd];"
         "[vmix][musd]amix=inputs=2:duration=longest,volume=2[mix]"
-        % (len(timed), fmt, total, max(total - 2.5, 0), fmt, fmt, total, fmt)
+        % (len(timed), fmt, total, music_lufs, max(total - 2.5, 0), fmt, fmt, total, fmt)
     )
     args = inputs + ["-i", music_src, "-filter_complex", fc, "-map", "[mix]",
-                     "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", out_wav.name]
-    common.run_ffmpeg(args, stage="assemble", note="mix voice + ducked music (%s)" % mtag,
+                     "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", "mix_raw.wav"]
+    common.run_ffmpeg(args, stage="assemble", note="mix voice + ducked chosen score",
                       cwd=WORK)
 
     # Loudness normalise: two-pass loudnorm to -14 LUFS, true peak -1 dB.
     p = subprocess.run(
-        [common._ffmpeg_bin(), "-hide_banner", "-nostats", "-i", out_wav.name,
+        [common._ffmpeg_bin(), "-hide_banner", "-nostats", "-i", "mix_raw.wav",
          "-af", "loudnorm=I=-14:TP=-1:LRA=11:print_format=json", "-f", "null", "-"],
         capture_output=True, text=True, cwd=str(WORK))
     m = re.search(r"\{[^{}]*\"input_i\"[^{}]*\}", p.stderr, re.S)
@@ -215,7 +209,7 @@ def build_audio_master(timed, total, out_wav):
         sys.exit("loudnorm measure pass failed:\n" + p.stderr[-800:])
     mv = json.loads(m.group(0))
     common.run_ffmpeg(
-        ["-i", out_wav.name, "-af",
+        ["-i", "mix_raw.wav", "-af",
          ("loudnorm=I=-14:TP=-1:LRA=11:measured_I=%s:measured_TP=%s:"
           "measured_LRA=%s:measured_thresh=%s:offset=%s:linear=true"
           % (mv["input_i"], mv["input_tp"], mv["input_lra"],
@@ -248,12 +242,16 @@ def main():
     WORK = common.stage_dir("assemble")
 
     dur_file = common.ROOT / "outputs" / "narration" / "durations.json"
-    durations = json.loads(dur_file.read_text()) if dur_file.exists() else {}
+    if not dur_file.exists():
+        sys.exit("no outputs/narration/durations.json — run: make narration")
+    durations = json.loads(dur_file.read_text())
     if not durations:
-        print("! no narration found — run: make narration (using planned durations)")
+        sys.exit("outputs/narration/durations.json is empty — run: make narration")
 
     plan_file = common.ROOT / "outputs" / "shots" / "plan.json"
-    plan = json.loads(plan_file.read_text()) if plan_file.exists() else {}
+    if not plan_file.exists():
+        sys.exit("no outputs/shots/plan.json — run: make shots")
+    plan = json.loads(plan_file.read_text())
 
     timed, total = build_timeline(sb, durations)
     for item in timed:

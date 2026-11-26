@@ -1,0 +1,223 @@
+{
+  "_note": "Comic-authored direction for the renderer. Not part of storyboard.schema: each shot has a base keyframe (storyboard.json) plus 'extras' — the reaction, interaction and insert panels cut into the beat. 'at' is the fraction of the shot where the cut happens; 'actor' is the cast portrait attached to that cut (omit to inherit the shot's base actor, null for none); 'role' is the editorial label shown in PROMPTS.md and the editor. 'mv' is the camera move; 'balloon' is the quoted line; 'sfx' is a list of comic sound effects.",
+  "shots": {
+    "s1_das": {
+      "mv": "push_out",
+      "actor": null,
+      "sfx": [
+        {
+          "text": "DUM-TAK!",
+          "t": 1.29,
+          "x": 0.74,
+          "y": 0.24
+        }
+      ],
+      "extras": [
+        {
+          "role": "dancer & bystander interaction",
+          "at": 0.42,
+          "actor": null,
+          "prompt": "comic book panel, medium-wide shot of two Ethiopian wedding guests in white shamma and habesha kemis dancing eskista face to face in a circle of clapping bystanders, an older woman beside them tilting her head back in ululation while neighbours smile and cheer"
+        },
+        {
+          "role": "server & guest interaction",
+          "at": 0.74,
+          "actor": null,
+          "prompt": "comic book panel, medium-wide shot of smiling servers in white aprons weaving between seated elders to pour golden honey wine tej from round-bottomed berele glass flasks while another server carries a huge covered woven mesob brimming with steaming injera and red doro wot"
+        }
+      ]
+    },
+    "s2_arrival": {
+      "mv": "push_out",
+      "actor": "gebre_hanna",
+      "extras": [
+        {
+          "role": "guest-and-traveller road interaction",
+          "at": 0.44,
+          "actor": null,
+          "prompt": "comic book panel, medium-wide street interaction beside the stone compound wall: two wealthy wedding guests in crisp white habesha kemis and gold-bordered netela pull their garments aside and whisper behind their hands, glancing down disdainfully at the dusty patched brown gabi and worn leather sandals of the lean bearded elder in a cream turban walking calmly past them, bystanders looking out from the gate"
+        },
+        {
+          "role": "medium reaction at the compound threshold",
+          "at": 0.74,
+          "actor": "gebre_hanna",
+          "prompt": "comic book medium shot, Aleqa Gebre Hanna in his dusty patched brown gabi and cream turban with a gold band pausing near the festive compound gate, sharp observant eyes gleaming with a warm knowing smile as bustling servers carrying clay pots and laughing guests crowd the bright lantern-lit tent archway behind him"
+        }
+      ]
+    },
+    "s3_gatekeeper": {
+      "mv": "push_out",
+      "actor": null,
+      "balloon": {
+        "text": "This feast is for honorable guests, old man!",
+        "start": 2.01,
+        "end": 7.69,
+        "top": 0.16
+      },
+      "extras": [
+        {
+          "role": "over-the-shoulder group rejection",
+          "at": 0.38,
+          "actor": null,
+          "prompt": "comic book over-the-shoulder interaction shot, framed past the dusty brown gabi shoulder and cream turban of Aleqa Gebre Hanna in the foreground toward the stout bare-headed gatekeeper in his dark-teal velvet kabba sneering and pointing sternly down the road; flanking the gatekeeper, two richly dressed guests smirk and shield their faces in disdain while a young server holding a berele tray peeks awkwardly from behind the woven tent curtain and bystanders gather behind the stone wall"
+        },
+        {
+          "role": "environmental reaction & turn-away",
+          "at": 0.72,
+          "actor": "gebre_hanna",
+          "prompt": "comic book medium-wide environmental reaction shot: in the foreground, Aleqa Gebre Hanna in his dusty patched gabi and cream turban with a gold band turns calmly away toward the dusty road with a small, knowing, slightly dangerous half-smile and steady grip on his staff; behind him at the sunlit compound gate, the stout bare-headed gatekeeper folds his arms smugly, two guests whisper and watch him leave, and a server pauses glancing back over his shoulder"
+        }
+      ]
+    },
+    "s4_change": {
+      "mv": "pan_r",
+      "actor": null,
+      "extras": [
+        {
+          "role": "courtyard wash & chest preparation",
+          "at": 0.55,
+          "actor": "gebre_hanna",
+          "prompt": "comic book medium-wide panel in a sunlit stone courtyard: Aleqa Gebre Hanna in his cream turban with a gold band splashing cool water from a terracotta clay basin onto his face with sparkling droplets frozen mid-air while glancing knowingly toward a folded royal velvet kabba laid out beside him, a curious neighbour child peeking around the courtyard doorway"
+        }
+      ]
+    },
+    "s5_dressed": {
+      "mv": "pan_r",
+      "actor": null,
+      "extras": [
+        {
+          "role": "wide street & neighbour interaction",
+          "at": 0.55,
+          "actor": null,
+          "prompt": "comic book wide village street panel: Aleqa Gebre Hanna in his cream turban with a gold band, snow-white tibeb shamma, royal indigo velvet kabba and kezera walking stick striding along the sunlit road toward the distant wedding tents; villagers carrying clay water jars stop to bow respectfully in greeting, neighbours lean over stone walls in awe, and two grinning children trot alongside him"
+        }
+      ]
+    },
+    "s6_welcome": {
+      "mv": "pan_r",
+      "actor": null,
+      "sfx": [
+        {
+          "text": "GASP!",
+          "t": 1.14,
+          "x": 0.26,
+          "y": 0.3
+        },
+        {
+          "text": "ELILILILI!",
+          "t": 4.92,
+          "x": 0.68,
+          "y": 0.26
+        }
+      ],
+      "extras": [
+        {
+          "role": "host & Gebre Hanna greeting interaction",
+          "at": 0.48,
+          "actor": null,
+          "prompt": "comic book medium-wide interaction panel inside the das entrance: the older warm-faced Ethiopian host, bare-headed with silver-flecked hair in a crimson velvet kabba with gold embroidery, no eyeglasses, no modern accessories, eagerly clasping both hands and forearms of Aleqa Gebre Hanna (cream turban with gold band, snow-white shamma, indigo velvet kabba) to welcome him warmly inside, while behind them the stout bare-headed gatekeeper hovers nervously wiping his brow, smiling women ululate, and servers hurry to clear the aisle"
+        }
+      ]
+    },
+    "s7_feast": {
+      "mv": "pan_l",
+      "actor": null,
+      "balloon": {
+        "text": "Aleqa! Eat, drink — everything is yours!",
+        "start": 2.19,
+        "end": 6.71,
+        "top": 0.14
+      },
+      "extras": [
+        {
+          "role": "host, servers & seated guest table interaction",
+          "at": 0.45,
+          "actor": null,
+          "prompt": "comic book medium-wide interaction panel around the seat of honor: Aleqa Gebre Hanna seated serenely on cushioned carpets as the crimson-robed host leans in gesturing grandly toward a huge open woven mesob, one smiling server lifting off the conical woven lid as steam rises and another server pouring golden tej into a glass berele beside his elbow, nearby guests leaning in eagerly waiting for him to eat"
+        },
+        {
+          "role": "food insert",
+          "at": 0.76,
+          "actor": null,
+          "prompt": "comic book food close-up panel, glistening macro of rich crimson-red Ethiopian doro wot with whole boiled egg and chicken drumstick piled over spongy injera inside a woven mesob, curls of hot steam rising, and amber-golden tej sparkling in a round-bottomed berele glass flask"
+        }
+      ]
+    },
+    "s8_deadpan": {
+      "mv": "push_in",
+      "actor": null,
+      "extras": [
+        {
+          "role": "medium close-up in context",
+          "at": 0.55,
+          "actor": "gebre_hanna",
+          "prompt": "comic book dramatic medium close-up panel, Aleqa Gebre Hanna in his cream turban with a gold band, face completely calm and unreadable as one eyebrow subtly lifts and his dark eyes glint with quiet mischief above the steaming mesob; framed over his shoulders in soft focus, the eager expectant faces of the crimson-robed host and watching guests lean in waiting for his first bite"
+        }
+      ]
+    },
+    "s9_mess": {
+      "mv": "pan_r",
+      "actor": null,
+      "sfx": [
+        {
+          "text": "SQUELCH!",
+          "t": 1.81,
+          "x": 0.3,
+          "y": 0.18
+        },
+        {
+          "text": "POUR!",
+          "t": 4.72,
+          "x": 0.64,
+          "y": 0.28
+        }
+      ],
+      "extras": [
+        {
+          "role": "host & Gebre Hanna physical confrontation",
+          "at": 0.42,
+          "actor": null,
+          "prompt": "comic book medium-wide confrontation interaction panel: Aleqa Gebre Hanna (cream turban with gold band, meat tucked into his red-stained white shamma sleeve) calmly tilts a glass berele flask pouring sparkling amber-golden tej straight down the front of his royal indigo velvet kabba, while right beside him the horrified older host in his crimson kabba lunges forward with wide eyes reaching both hands toward Gebre Hanna's arm to stop him, as two stunned servers and gasping guests lean back in disbelief"
+        },
+        {
+          "role": "sauce & tej splash insert",
+          "at": 0.74,
+          "actor": null,
+          "prompt": "comic book tight dynamic insert, thick chunky orange-red doro wot with visible shredded chicken soaking into intricate gold-and-red tibeb embroidery on a white cotton shamma hem while golden tej splashes down onto woven reed floor mats beside the base of a woven mesob and stunned guests' sandals, droplets frozen mid-air"
+        }
+      ]
+    },
+    "s10_punchline": {
+      "mv": "push_out",
+      "actor": null,
+      "balloon": {
+        "text": "Eat, my clothes, eat!",
+        "start": 2.29,
+        "end": 6.48,
+        "top": 0.58
+      },
+      "sfx": [
+        {
+          "text": "HA HA HA!",
+          "t": 13.81,
+          "x": 0.7,
+          "y": 0.34
+        }
+      ],
+      "extras": [
+        {
+          "role": "hero delivery with reacting crowd",
+          "at": 0.5,
+          "actor": "gebre_hanna",
+          "prompt": "comic book dramatic medium shot, low angle on Aleqa Gebre Hanna in his cream turban with a gold band, chin lifted in composed triumphant wit in his doro-wot-stained white tibeb shamma and velvet kabba, the thick orange-red stew stain visible with pieces of chicken and egg, speaking calmly to the room as guests and servers behind him exchange sudden wide-eyed looks of dawning realization, golden rim light"
+        },
+        {
+          "role": "wide full-das eruption",
+          "at": 0.842,
+          "actor": null,
+          "prompt": "comic book wide celebratory finale inside the Ethiopian wedding das: the entire tent erupts in roaring laughter and applause — guests slapping their knees and clapping, smiling servers grinning behind berele trays, women raising ililta ululations, the crimson-robed host laughing sheepishly with one hand on his forehead, Aleqa Gebre Hanna smiling warmly at centre in his stained finery, and in the foreground corner the bare-headed gatekeeper in his dark-teal kabba staring down sheepishly at his own sandals, joyful golden energy lines"
+        }
+      ]
+    }
+  }
+}
