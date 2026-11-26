@@ -209,7 +209,7 @@ def fit_line(src, dst, pause_cap, tempo):
         _write_wav(dst, pcm, sr)
     if tmp != src and tmp.exists():
         tmp.unlink()
-    return {"raw_s": round(raw_s, 3), "fit_s": round(common.probe_duration(dst), 3),
+    return {"raw_s": round(raw_s, 3), "fit_s": round(common.probe_duration(dst), 4),
             "pause_s_removed": round(removed, 3), "pauses_capped": capped}
 
 
@@ -256,7 +256,9 @@ def ensure_fit(sb, force=False):
             t0 = time.time()
             info = fit_line(raw_dir / (sid + ".wav"), out_dir / (sid + ".wav"),
                             pause_cap, tempo)
-            durations[sid] = info["fit_s"]
+            # measured from the file, exactly as the cached path below does:
+            # the timeline must not depend on whether the fit was just built
+            durations[sid] = common.probe_duration(out_dir / (sid + ".wav"))
             common.log_call(stage="narration-fit", model="ffmpeg-atempo",
                             latency_ms=int((time.time() - t0) * 1000), status="ok",
                             params=dict(info, shot=sid, pause_cap=pause_cap, tempo=tempo),

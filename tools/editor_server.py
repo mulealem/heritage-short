@@ -7,7 +7,7 @@ Stdlib only. Serves editor/index.html and a small JSON API:
     POST /api/regen/keyframe            {shot_id}         -> one base keyframe
     POST /api/regen/panel               {shot_id, kind, index} -> insert/extra
     POST /api/regen/narration           {shot_id}         -> one TTS line
-    POST /api/render                    starts `python3 -m pipeline.comic all`
+    POST /api/render                    starts `python3 -m pipeline.short` (both films)
     GET  /api/render/status             running/exit/log tail
     GET  /files/<path>                  outputs/ media (keyframes, panels, wavs, film)
 
@@ -241,14 +241,17 @@ def state():
             "narration_state": _narration_state(sb, shot),
             "composed_prompt": composed_prompt(sb, spec, "keyframe"),
         })
-    film = common.OUT / "film_9x16.mp4"
+    films = []
+    for name in ("film_9x16.mp4", "film_16x9.mp4"):
+        f = common.OUT / name
+        if f.exists():
+            films.append({"url": "/files/%s" % name, "mtime": f.stat().st_mtime})
     return {
         "storyboard": sb,
         "panels": panels,
         "shots": shots,
         "files": {"keyframes": keyfiles, "panels": panel_files, "narration": nar_files},
-        "film": {"url": "/files/film_9x16.mp4", "mtime": film.stat().st_mtime}
-        if film.exists() else None,
+        "films": films,
         "render": dict(RENDER),
         "env": {"provider": _provider(),
                 "tts": common.env_key("GEMINI_TTS_MODEL"),
@@ -287,7 +290,7 @@ def start_render():
     env["PATH"] = str(Path.home() / ".cargo" / "bin") + ":" + env.get("PATH", "")
 
     def run():
-        p = subprocess.Popen([sys.executable, "-m", "pipeline.comic", "all"],
+        p = subprocess.Popen([sys.executable, "-m", "pipeline.short"],
                              cwd=str(ROOT), env=env, stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT, text=True, bufsize=1)
         for line in p.stdout:
@@ -335,8 +338,8 @@ class Handler(BaseHTTPRequestHandler):
 
     def _file(self, rel):
         rel = unquote(rel)
-        if rel == "film_9x16.mp4":
-            path = common.OUT / "film_9x16.mp4"
+        if rel.startswith("film_") and rel.endswith(".mp4"):
+            path = common.OUT / Path(rel).name
             if not path.exists():
                 return self._send(404, {"error": "not found"})
             data = path.read_bytes()

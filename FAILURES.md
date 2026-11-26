@@ -285,8 +285,10 @@ This file is graded: what earns marks is the honest loop of break → try → fi
   and read from no unrelated setting. Keys are requested only on a real miss.
   The 11 keyframe sidecars were re-signed to the new token — and the sanity
   check refused the one anchored keyframe, because my migration had dropped
-  its identity directive from the hashed prompt; redone with it. Proof: the
-  clean-clone run (`make short` in a fresh clone with no `.env`).
+  its identity directive from the hashed prompt; redone with it. Proof: a
+  fresh clone with no `.env` ran `make short` end to end — 0 model calls, 39
+  cache hits, 0 errors, 8 min 19 s from clone to both films, Rust build
+  included. (That run also exposed F18.)
 - Lesson: reproducibility is a property of the whole path — env, keys,
   validation, build — and it is only proven by cloning.
 
@@ -304,3 +306,24 @@ This file is graded: what earns marks is the honest loop of break → try → fi
   chunk joins, present in every render.
 - Lesson: "deterministic" needs a unit — frames yes, bytes no. Measure before
   claiming either.
+
+### F18: the timeline depended on whether the narration edit was cached
+- When/symptom: 2026-11-26, found by the clean-clone test. The clone's films
+  passed every check, but 1,765 of 2,151 encoded frames differed from the
+  working copy's. Comparing the frames the renderer *draws* (PNG, before
+  encoding) showed 5 of 7 differing by 1–2 levels on up to 4 % of pixels, and
+  `film.json` differed by a millisecond: shot start `15.567` in the clone,
+  `15.56725` in the working copy.
+- What I tried: compared the fitted WAVs (byte-identical), the fitted durations
+  (identical), then the two code paths that produce them.
+- Cause: `ensure_fit` returned durations rounded to 3 decimals when it had just
+  fitted the lines (`fit_s`) and unrounded ones when it loaded them from its
+  own cache (`probe_duration`). A fresh clone always takes the first path, my
+  working copy the second — so the cut shifted by up to 1 ms, and the camera
+  moves with it.
+- Fix or workaround: both paths now measure the file. Re-test: a clean clone
+  with a fresh fit builds a `film.json` byte-identical to the working copy's,
+  and 7 of 7 sampled frames are byte-identical in both layouts.
+- Lesson: a cache must return the same value it computed, bit for bit. Two
+  code paths that "mean the same thing" are two answers. This is exactly why
+  the brief asks for the clean-clone run.
