@@ -417,12 +417,13 @@ class Handler(BaseHTTPRequestHandler):
         if url.path.startswith("/archives/"):
             name = Path(url.path[len("/archives/"):]).name
             arc = ROOT / "archives" / name
-            if not arc.exists() or arc.suffix not in (".zip", ".mp4", ".srt", ".wav"):
+            if not arc.exists() or arc.suffix not in (".zip", ".mp4", ".srt", ".wav", ".pdf"):
                 return self._send(404, {"error": "not found"})
             size = arc.stat().st_size
             self.send_response(200)
             self.send_header("Content-Type",
                              "video/mp4" if arc.suffix == ".mp4" else
+                             "application/pdf" if arc.suffix == ".pdf" else
                              "application/zip")
             self.send_header("Content-Length", str(size))
             self.send_header("Content-Disposition",
