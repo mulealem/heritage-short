@@ -191,12 +191,15 @@ size.
   style block, identity directives, cast anchors, all 26 cuts with their sync
   status (`make prompts` regenerates it)
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — stages, contracts, caching, failure handling
-- [`DESIGN.md`](DESIGN.md) — audience, intent, the user tests
+- [`DESIGN.md`](DESIGN.md) — audience, intent, the review notes behind
+each change, and the test protocol that was not run
 - [`EXPERIMENTS.md`](EXPERIMENTS.md) — hypothesis → change → result
 - [`FAILURES.md`](FAILURES.md) — what broke, what was tried, what fixed it
 - [`COSTS.md`](COSTS.md) — measured latency and list-price equivalents
 - [`ETHICS.md`](ETHICS.md) — consent, licences, labelling
-- [`REPORT.md`](REPORT.md) — the written report for the brief
+- [`REPORT.md`](REPORT.md) — the written report for the brief: what was
+  made and for whom, what review changed, the hardest problem, the practices
+  that did and did not work, and the limits stated plainly
 - [`story_brief.md`](story_brief.md) — the one page that comes before a
   storyboard: story, one picture per beat, audience, the feeling at the end
 - `storyboard.english.json` — the same storyboard voiced in English, kept for

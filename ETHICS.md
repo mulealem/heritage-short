@@ -65,8 +65,10 @@ third party.
   (Gemini TTS), a score synthesised by code…" (`ffprobe` shows it). The comic
   camera moves crop a few percent of each panel edge; no blur or patch is
   applied to any watermark.
-- Platform disclosure (YouTube / TikTok / Meta "AI content" label) switched ON
-  when posting — TODO: platform + date + link.
+- Platform disclosure (the "AI content" label on YouTube, TikTok or Meta) is
+  to be switched ON when the film is posted publicly. As of this commit the
+  post has not been published, so there is no platform, date or link to record
+  yet; when there is, it belongs here and on the submission form.
 
 ## Private data
 

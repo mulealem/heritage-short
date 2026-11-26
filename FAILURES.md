@@ -214,8 +214,10 @@ This file is graded: what earns marks is the honest loop of break → try → fi
   the next plan window. Cloudflare's free path is also daily-capped (F8).
 - Lesson: budget paid image quotas like GPU hours — one restyle can eat a
   day's allowance. Generate the final prompt set once, then iterate text.
-- TODO: OOM on Kaggle T4, character drift across shots, TTS mispronouncing
-  place names in your language — as they happen.
+- Still open, and honestly untested: out-of-memory on a Kaggle T4 (the video
+  route never ran), character drift across a large cast (this film has two
+  characters, where it holds), and TTS mispronouncing proper nouns in Amharic
+  (no native-speaker check was done — the test the brief recommends).
 
 ### F13: subject_reference destroys wide framing; unanchored wides drift on props
 - When/symptom: 2026-11-26, after the ensemble revision. A "wide environmental
