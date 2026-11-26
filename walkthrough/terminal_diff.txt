@@ -1,0 +1,7 @@
+$ git diff storyboard.json
+  s5_dressed — one shot of ten, one field of eight
+
+-  …wooden kezera walking stick firmly on the stone step, radiant golden backlight
++  …stick firmly on the stone step, red leather slippers, radiant golden backlight
+
+1 file changed, 1 insertion(+), 1 deletion(-)

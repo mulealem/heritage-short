@@ -1,0 +1,6 @@
+$ python3 -m pipeline.keyframes
+  s5_dressed: ok
+  … and 10 other jobs: cache hit
+
+  cache hits 10   model calls 1
+  keyframes done -> /tmp/walk-demo/outputs/keyframes

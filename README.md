@@ -210,6 +210,11 @@ each change, and the test protocol that was not run
   ACE-Step), step by step, with their honest status
 - `docs/architecture.html` — a visual map (`make serve`, then
   http://127.0.0.1:8123/architecture.html)
+- [`walkthrough/TRANSCRIPT.md`](walkthrough/TRANSCRIPT.md) — the walkthrough
+  video as a timed script: what is on screen, what to say when, and the command
+  that replaces the silent track with a recorded voice. The video is rebuilt by
+  `python3 tools/make_walkthrough.py`; it calls no model (the clips are the
+  film's own fframes render, the rest is HTML and FFmpeg)
 
 ## The log
 

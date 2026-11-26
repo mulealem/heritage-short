@@ -47,3 +47,10 @@ archives/
 # local scratch from story iterations (kept on disk, out of the repo)
 storyboard.backup.json
 design_cast_note.json
+
+# walkthrough: the tool, the transcript, the SRT and the captures are tracked;
+# the rendered video and its per-scene segments are rebuilt by the tool
+walkthrough/slides/
+walkthrough/clips/
+walkthrough/*.mp4
+walkthrough/concat.txt

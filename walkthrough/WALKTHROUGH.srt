@@ -1,0 +1,83 @@
+1
+00:00:00,000 --> 00:00:09,000
+This is a walkthrough of Heritage Short: a pipeline that turns one
+JSON storyboard into a finished short film. The film is an Ethiopian
+folk tale, narrated in Amharic with English subtitles.
+
+2
+00:00:09,000 --> 00:00:28,022
+The film is a motion comic. Generated panels are cut and moved like
+a comic page: camera pushes, over-the-shoulder cuts, speech
+balloons, sound effects, word-by-word captions. There is no video
+model and no GPU in this film; the picture is drawn on the CPU in
+about four minutes.
+
+3
+00:00:28,022 --> 00:00:45,022
+The same timeline renders twice. The landscape version is a comic
+page: the panel strip stays centred at full height, the spoken
+Amharic runs down the left margin, the English down the right. One
+film data file, one audio master, two layouts.
+
+4
+00:00:45,022 --> 00:01:09,022
+Everything starts from storyboard.json: ten beats, each with a
+duration, an image prompt, a motion prompt, the narration and its
+English line, a reason, and a seed. Beside it, panels.json says how
+each beat is cut. Every stage validates this against the schema
+before it runs, so a broken contract stops the build before a model
+is called.
+
+5
+00:01:09,022 --> 00:01:31,022
+The pipeline is nine stages. Narration records ten lines. Two cast
+portraits anchor the characters. Keyframes and sixteen interaction
+panels are generated from prompts. The build turns them into a
+timeline, the score is synthesised from that timeline, and the
+picture is rendered in both ratios and muxed with one audio master.
+
+6
+00:01:31,022 --> 00:01:51,022
+One command runs all of it. On a fresh clone with no API keys, both
+films rebuild from the committed cache: zero model calls,
+thirty-nine cache hits, about nine minutes including the Rust build.
+
+7
+00:01:51,022 --> 00:02:17,022
+The hardest problem was keeping a character the same person across
+twenty-six cuts without wrecking the shot. A reference portrait
+holds the face, but it is also a composition prior: attached to a
+wide shot it produced a giant head over a tiny scene. So: anchor the
+close-ups, and describe the wides in full.
+
+8
+00:02:17,022 --> 00:02:31,022
+Here is the live part. I change one image prompt — one shot, one
+line of the storyboard.
+
+9
+00:02:31,022 --> 00:02:53,022
+Then I rerun the keyframe stage. Ten jobs are served from the cache.
+One image is drawn: seventeen point nine seconds, about a third of a
+cent. The log records exactly one call, with its seed.
+
+10
+00:02:53,022 --> 00:03:13,022
+Every call lands in runs.jsonl with its model, parameters, seed,
+latency and cost. The whole project, every iteration included, came
+to about sixty-five cents at list prices. The assets in the final
+film: eleven cents.
+
+11
+00:03:13,022 --> 00:03:37,022
+What this is not. There is no video model in the film: the clip
+route is implemented and untested. There is no music model: the
+score is a bed my own code synthesises. And the audience test the
+brief asks for was not run — that is written down in DESIGN.md
+rather than invented.
+
+12
+00:03:37,022 --> 00:03:49,022
+The repository, both films and this transcript are linked below.
+Every number in the documentation can be checked against the run
+log.

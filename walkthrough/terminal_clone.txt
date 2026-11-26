@@ -1,0 +1,5 @@
+$ git clone … && make short      # no .env, no API keys
+DONE film_9x16.mp4: 89.7s, 81.6 MB
+DONE film_16x9.mp4: 89.7s, 65.7 MB
+this run: 0 real model call(s) (~$0.0000 list price), 39 cache hit(s), 0 error(s)
+real	9m16.878s   # Rust build included

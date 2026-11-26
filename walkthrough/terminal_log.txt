@@ -1,0 +1,11 @@
+$ tail -2 runs.jsonl
+{"stage": "keyframes", "model": "flux", "seed": 110, "latency_ms": null,
+ "status": "cache", "cost_usd_est": null}
+{"stage": "keyframes", "model": "image-01", "seed": 105, "latency_ms": 17879,
+ "status": "ok", "cost_usd_est": 0.0035}
+
+# and the whole-project summary:
+  image-01   $0.4760 (136 calls)
+  FLUX draft $0.1164 (97)
+  Gemini TTS $0.0614 (52)
+  TOTAL      $0.6538
