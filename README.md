@@ -199,6 +199,8 @@ size.
 - [`REPORT.md`](REPORT.md) — the written report for the brief
 - [`story_brief.md`](story_brief.md) — the one page that comes before a
   storyboard: story, one picture per beat, audience, the feeling at the end
+- `storyboard.english.json` — the same storyboard voiced in English, kept for
+  comparison (the submitted cut is Amharic)
 - [`comic/README.md`](comic/README.md) — the renderer: build requirements, the
   two layouts, the `film.json` data contract
 - [`kaggle/README.md`](kaggle/README.md) — the optional GPU stages (Wan 2.2,

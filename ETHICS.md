@@ -76,6 +76,15 @@ third party.
   prompts, seeds, latencies and costs, not credentials. The working tree and
   the git history were scanned for every key value before the repository was
   published (none found).
-- The earlier family-memory storyboard remains in git history (`storyboard.backup.json`
-  is local-only); nothing private was sent to a free endpoint that trains on
-  inputs beyond storyboard prompts for that draft.
+- The earlier family-memory draft was **never committed**: its storyboard
+  (`storyboard.backup.json`) is local-only and gitignored, and no image or
+  audio from it is in `outputs/`. What the published log does contain is 29
+  `runs.jsonl` lines from that draft, and they carry no text — only a shot id
+  (`s1_street` …), a character count, a size and a seed. `runs.jsonl` records
+  no prompt or narration text for any stage, which is why it can be published
+  at all; the prompts themselves live in `storyboard.json` and
+  `comic/panels.json` only.
+- That draft's prompts were sent to Gemini TTS and Cloudflare Workers AI,
+  whose free endpoints may retain inputs; they contained a family memory, no
+  names, addresses or dates. The decision to set it aside and tell a
+  traditional tale was the narrator's.
