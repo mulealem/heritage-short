@@ -54,3 +54,8 @@ walkthrough/slides/
 walkthrough/clips/
 walkthrough/*.mp4
 walkthrough/concat.txt
+
+# deck: the PDF and the speaker notes are deliverables; the per-slide PNGs and
+# the print shim are rebuildable with tools/make_deck.py
+walkthrough/deck/slide_*.png
+walkthrough/deck/print.html

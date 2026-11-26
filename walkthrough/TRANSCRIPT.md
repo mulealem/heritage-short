@@ -142,10 +142,11 @@ would not be honest is a walkthrough that claims a demo it does not show.
 | scene | source |
 |---|---|
 | title, stages, limits, end | HTML slides rendered headlessly from this repository |
-| 9:16 and 16:9 clips | cut from `outputs/film_9x16.mp4` and `outputs/film_16x9.mp4` |
+| the 9:16 and 16:9 scenes | one still from each film, embedded in the slide |
 | the contract | a real excerpt of `storyboard.json` |
 | clone, diff, run, log | captured terminal output of the runs described |
 | the regenerated image | the actual file those runs produced |
 
-No model was called to make this video: the clips are the film's own
-fframes render, and everything else is text, HTML and FFmpeg.
+The video is a slide deck: every scene is a still. No model was called
+to make it — the two film stills are frames of the film's own fframes
+render, and everything else is text, HTML and FFmpeg.

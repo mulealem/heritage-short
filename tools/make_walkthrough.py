@@ -3,15 +3,18 @@
 What it makes, in `walkthrough/`:
 
   slides/NN.png         each screen, 1920x1080, rendered from the real repo
-  clips/NN.mp4          clip inserts from the finished films
+                        (every scene is a still: a pure slide deck)
+  stills/*.jpg          one frame from each finished film, for the two film slides
   walkthrough_silent.mp4  the cut, 1080p30, no audio — record your voice over this
+                          (every scene is a still: a pure slide deck)
   WALKTHROUGH.srt       one subtitle per scene, timed to the cut
   TRANSCRIPT.md         the narration script, timed, plus how to record and mux
 
 Everything on screen is real: the contract excerpt is read from
 storyboard.json, the terminal panels are the captured output of a genuine
 one-prompt regeneration, the cost table comes from tools/cost_report.py, and
-the clip inserts come from outputs/film_*.mp4. Nothing here is mocked.
+the two film stills are frames of outputs/film_*.mp4. Nothing here is mocked,
+and nothing is a video insert — the deck is all stills.
 
 Requires: chromium (headless screenshots), ffmpeg. Usage:
 
@@ -47,13 +50,13 @@ SCENES = [
      "This is a walkthrough of Heritage Short: a pipeline that turns one JSON "
      "storyboard into a finished short film. The film is an Ethiopian folk tale, "
      "narrated in Amharic with English subtitles."),
-    ("02_vertical", "clip9x16_framed", 19,
+    ("02_vertical", "slide", 19,
      "9:16 — 1080×1920 · 89.7 s",
      "The film is a motion comic. Generated panels are cut and moved like a comic "
      "page: camera pushes, over-the-shoulder cuts, speech balloons, sound effects, "
      "word-by-word captions. There is no video model and no GPU in this film; the "
      "picture is drawn on the CPU in about four minutes."),
-    ("03_landscape", "clip16x9", 17,
+    ("03_landscape", "slide", 17,
      "16:9 — the same timeline, a comic page",
      "The same timeline renders twice. The landscape version is a comic page: the "
      "panel strip stays centred at full height, the spoken Amharic runs down the "
@@ -214,6 +217,39 @@ def body_vertical(o):
     return left + right
 
 
+def body_film_vertical(o):
+    still = OUT / "stills" / "film_9x16.jpg"
+    left = ('<div style="position:absolute;left:88px;top:120px;width:430px">'
+            '<div class="kicker">the film, as made</div>'
+            '<h1 style="font-size:92px">9:16</h1>'
+            '<div class="rule"></div>'
+            '<p class="lead" style="font-size:24px">1080×1920 · 24 fps · 89.7 s</p>'
+            '<p style="margin-top:20px"><span class="pill">Amharic</span></p>'
+            '<p style="margin-top:8px"><span class="pill">English subtitles</span></p>'
+            '<p class="lead dim" style="font-size:21px;margin-top:26px">one frame of the '
+            'finished film: panel, caption, subtitle</p>'
+            '</div>')
+    img = ('<img src="file://%s" style="position:absolute;left:600px;top:0;height:1080px;'
+           'border-left:3px solid %s;border-right:3px solid %s">' % (still, GOLD, GOLD))
+    right = ('<div style="position:absolute;left:1300px;top:180px;width:530px">'
+             '<div class="kicker">what it is not</div>'
+             '<p class="lead" style="font-size:25px;margin-top:16px">not a video model</p>'
+             '<p class="lead" style="font-size:25px;margin-top:12px">not a GPU render</p>'
+             '<p class="lead dim" style="font-size:22px;margin-top:22px">26 cuts over 10 beats, '
+             'drawn on the CPU in about four minutes</p>'
+             '</div>')
+    return left + img + right
+
+
+def body_film_landscape(o):
+    still = OUT / "stills" / "film_16x9.jpg"
+    return ('<div class="kicker">the same timeline, rendered twice</div>'
+            '<h1 style="font-size:52px">16:9 — a comic page, not a letterbox</h1>'
+            '<div class="rule" style="margin:18px 0 20px"></div>'
+            '<img src="file://%s" style="display:block;width:1440px;margin:0 auto;'
+            'border:2px solid %s;border-radius:8px">' % (still, GOLD))
+
+
 def body_stages(o):
     steps = [("1 · validate", "schema check", "storyboard"),
              ("2 · narration", "Gemini TTS", "10 lines"),
@@ -303,7 +339,8 @@ def body_end(o):
 
 
 BODIES = {"04_contract": body_contract, "05_stages": body_stages, "06_command": body_command,
-          "02_vertical": body_vertical,
+          "02_vertical": body_film_vertical,
+          "03_landscape": body_film_landscape,
           "07_decision": body_decision, "08_diff": body_diff, "09_run": body_run,
           "10_log": body_log, "11_limits": body_limits, "12_end": body_end}
 
@@ -316,10 +353,17 @@ def chromium():
     sys.exit("chromium not found — install it, or screenshot the slides by hand")
 
 
+def still_from_film(src, t, dst):
+    """One frame of the finished film, as a still for a slide."""
+    sh(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-ss", "%.3f" % t,
+        "-i", str(src), "-frames:v", "1", "-q:v", "2", str(dst)])
+    return dst
+
+
 def slide(scene):
     sid, _, dur, heading, _n = scene
     body = BODIES.get(sid, body_title)({"heading": heading})
-    foot = "" if sid == "02_vertical" else FOOT
+    foot = "" if sid in ("02_vertical", "03_landscape") else FOOT
     html = OUT / "slides" / (sid + ".html")
     html.write_text(PAGE % dict(W=W, H=H, FS=26, H1=66, PRE=25, TEAL=TEAL, GOLD=GOLD,
                                 PAPER=PAPER, FONT=FONT_ET, body=body, foot=foot),
@@ -396,6 +440,9 @@ def main():
     OUT.mkdir(exist_ok=True)
     (OUT / "slides").mkdir(exist_ok=True)
     (OUT / "clips").mkdir(exist_ok=True)
+    (OUT / "stills").mkdir(exist_ok=True)
+    still_from_film(ROOT / "outputs" / "film_9x16.mp4", 51.0, OUT / "stills" / "film_9x16.jpg")
+    still_from_film(ROOT / "outputs" / "film_16x9.mp4", 50.0, OUT / "stills" / "film_16x9.jpg")
 
     ws = ROOT / "walkthrough"
     for f in ("terminal_diff.txt", "terminal_run.txt", "terminal_log.txt"):
@@ -528,13 +575,14 @@ def write_transcript(cues, total, silent_name):
     L.append("| scene | source |")
     L.append("|---|---|")
     L.append("| title, stages, limits, end | HTML slides rendered headlessly from this repository |")
-    L.append("| 9:16 and 16:9 clips | cut from `outputs/film_9x16.mp4` and `outputs/film_16x9.mp4` |")
+    L.append("| the 9:16 and 16:9 scenes | one still from each film, embedded in the slide |")
     L.append("| the contract | a real excerpt of `storyboard.json` |")
     L.append("| clone, diff, run, log | captured terminal output of the runs described |")
     L.append("| the regenerated image | the actual file those runs produced |")
     L.append("")
-    L.append("No model was called to make this video: the clips are the film's own")
-    L.append("fframes render, and everything else is text, HTML and FFmpeg.")
+    L.append("The video is a slide deck: every scene is a still. No model was called")
+    L.append("to make it — the two film stills are frames of the film's own fframes")
+    L.append("render, and everything else is text, HTML and FFmpeg.")
     L.append("")
     (OUT / "TRANSCRIPT.md").write_text("\n".join(L), encoding="utf-8")
 
