@@ -304,6 +304,10 @@ This file is graded: what earns marks is the honest loop of break → try → fi
 - Fix or workaround: none needed. The drawn frames are deterministic; the
   encoded file is not bit-reproducible, and the seams are the encoder's own
   chunk joins, present in every render.
+- Confirmed on a clean clone of the final commit (after F18): `film.json`
+  identical, the audio track byte-identical in both ratios, subtitles
+  identical, and 2,079 of 2,151 (9:16) and 2,103 of 2,151 (16:9) encoded frames
+  bit-identical to the working copy's films. The rest are seams.
 - Lesson: "deterministic" needs a unit — frames yes, bytes no. Measure before
   claiming either.
 

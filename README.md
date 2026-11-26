@@ -30,7 +30,7 @@ What it costs and how long it takes:
 
 | Starting point | Model calls | Time |
 |---|---|---|
-| A clone of this repository (the cached outputs come with it) | **none** | **8 min 19 s measured**, clone to both films, Rust build included |
+| A clone of this repository (the cached outputs come with it) | **none** | **8 min 19 s measured**, clone to both films, Rust build included (9 min 17 s with other jobs sharing the CPU) |
 | One prompt or line changed | exactly one call (~$0.004) | that call, then the renders |
 | Empty `outputs/` with keys in `.env` | 29 images + 10 narration lines, ~**$0.11** at list prices | the above plus ~5 min of generation |
 
